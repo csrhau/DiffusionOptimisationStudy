@@ -2,6 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <numeric>
+#include <omp.h>
 
 #define TIMESTEPS 360
 
@@ -26,6 +27,7 @@ int main() {
   const double dt = sigma * dx * dy * dz / nu;
   std::vector<double> tnow(IMAX * JMAX * KMAX);
   std::vector<double> tnext(IMAX * JMAX * KMAX);
+  #pragma omp parallel for
   for (int k = 0; k < KMAX; ++k) {
     for (int j = 0; j < JMAX; ++j) {
       for (int i = 0; i < IMAX; ++i) {
@@ -43,6 +45,7 @@ int main() {
   const unsigned long hot_cells = (HOTCORNER_IMAX-1) * (HOTCORNER_JMAX-1) * (HOTCORNER_KMAX-1);
   double expected = hot_cells * 2.0 + (all_cells-hot_cells) * 1.0;
   double temperature = 0.0;
+  #pragma omp parallel for reduction(+:temperature)
   for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
       temperature = std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);
@@ -51,6 +54,7 @@ int main() {
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
+    #pragma omp parallel for 
     for (int k = 1; k < KMAX-1; ++k) {
       for (int j = 1; j < JMAX-1; ++j) {
         for (int i = 1; i < IMAX-1; ++i) {
@@ -61,6 +65,7 @@ int main() {
       }
     }
     // Reflective Boundary Condition
+    #pragma omp parallel for
     for (int k = 1; k < KMAX-1; ++k) {
       for (int j = 1; j < JMAX-1; ++j) {
         tnext[INDEX3D(0, j, k)] = tnext[INDEX3D(1, j, k)];
@@ -71,6 +76,7 @@ int main() {
         tnext[INDEX3D(i, JMAX-1, k)] = tnext[INDEX3D(i, JMAX-2, k)];
       }
     }
+    #pragma omp parallel for
     for (int j = 1; j < JMAX-1; ++j) {
       for (int i = 1; i < IMAX-1; ++i) {
         tnext[INDEX3D(i, j, 0)] = tnext[INDEX3D(i, j, 1)];
@@ -80,6 +86,7 @@ int main() {
     std::swap(tnow, tnext); 
   }
   temperature = 0.0;
+  #pragma omp parallel for reduction(+:temperature)
   for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
       temperature = std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);

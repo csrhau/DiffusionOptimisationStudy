@@ -3,13 +3,13 @@
 #include <chrono>
 #include <numeric>
 
-#define TIMESTEPS 100
+#define TIMESTEPS 360
 
 #define STENCIL_RADIUS 1
 
-#define IMAX 100
-#define JMAX 100
-#define KMAX 100
+#define IMAX 800
+#define JMAX 800
+#define KMAX 800 
 
 #define HOTCORNER_IMAX 25
 #define HOTCORNER_JMAX 25

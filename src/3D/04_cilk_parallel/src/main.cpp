@@ -49,7 +49,7 @@ int main() {
   cilk_for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
       const unsigned int start = INDEX3D(1, j, k);
-      const unsigned int length = IMAX-1; 
+      const unsigned int length = IMAX-2; 
       double *tnow_arr = tnow.data();
       *temperature_initial += __sec_reduce_add(tnow_arr[start:length]);
     }
@@ -91,7 +91,7 @@ int main() {
   cilk_for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
       const unsigned int start = INDEX3D(1, j, k);
-      const unsigned int length = IMAX-1; 
+      const unsigned int length = IMAX-2; 
       double *tnow_arr = tnow.data();
       *temperature_final += __sec_reduce_add(tnow_arr[start:length]);
     }

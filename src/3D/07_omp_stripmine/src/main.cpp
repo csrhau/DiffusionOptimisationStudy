@@ -10,9 +10,9 @@
 #define JMAX 800
 #define KMAX 800
 
-#define ISTRIPSPAN 64
-#define JSTRIPSPAN 64
-#define KSTRIPSPAN 64
+#define ISTRIPSPAN 32
+#define JSTRIPSPAN 16
+#define KSTRIPSPAN 16
 
 #define HOTCORNER_IMAX 25
 #define HOTCORNER_JMAX 25
@@ -36,14 +36,14 @@ int main() {
   const unsigned int istrips = (IMAX + ISTRIPSPAN - 1) / ISTRIPSPAN;
   #pragma omp parallel for
   for (int ks = 0; ks < kstrips; ++ks) {
+    const unsigned int kmin = ks * KSTRIPSPAN;
+    const unsigned int kmax = (ks == (kstrips - 1) ? KMAX : (ks + 1) * KSTRIPSPAN);
     for (int js = 0; js < jstrips; ++js) {
+      const unsigned int jmin = js * JSTRIPSPAN;
+      const unsigned int jmax = (js == (jstrips - 1) ? JMAX : (js + 1) * JSTRIPSPAN);
       for (int is = 0; is < istrips; ++is) {
-        const unsigned int kmin = ks * KSTRIPSPAN;
-        const unsigned int kmax = (ks < (kstrips - 1) ? (ks + 1) * KSTRIPSPAN : KMAX);
-        const unsigned int jmin = js * JSTRIPSPAN;
-        const unsigned int jmax = (js < (jstrips - 1) ? (js + 1) * JSTRIPSPAN : JMAX);
         const unsigned int imin = is * ISTRIPSPAN;
-        const unsigned int imax = (is < (istrips - 1) ? (is + 1) * ISTRIPSPAN : IMAX);
+        const unsigned int imax = (is == (istrips - 1) ? IMAX : (is + 1) * ISTRIPSPAN);
         for (int k = kmin; k < kmax; ++k) {
           for (int j = jmin; j < jmax; ++j) {
             for (int i = imin; i < imax; ++i) {
@@ -75,14 +75,14 @@ int main() {
     // Diffusion
     #pragma omp parallel for 
     for (int ks = 0; ks < kstrips; ++ks) {
+      const unsigned int kmin = (ks == 0 ? 1 : ks * KSTRIPSPAN);
+      const unsigned int kmax = (ks == (kstrips - 1) ? KMAX-1 : (ks + 1) * KSTRIPSPAN);
       for (int js = 0; js < jstrips; ++js) {
+        const unsigned int jmin = (js == 0 ? 1 : js * JSTRIPSPAN);
+        const unsigned int jmax = (js == (jstrips - 1) ? JMAX-1 : (js + 1) * JSTRIPSPAN);
         for (int is = 0; is < istrips; ++is) {
-          const unsigned int kmin = ks * KSTRIPSPAN;
-          const unsigned int kmax = (ks < (kstrips - 1) ? (ks + 1) * KSTRIPSPAN : KMAX);
-          const unsigned int jmin = js * JSTRIPSPAN;
-          const unsigned int jmax = (js < (jstrips - 1) ? (js + 1) * JSTRIPSPAN : JMAX);
-          const unsigned int imin = is * ISTRIPSPAN;
-          const unsigned int imax = (is < (istrips - 1) ? (is + 1) * ISTRIPSPAN : IMAX);
+          const unsigned int imin = (is == 0 ? 1 : is * ISTRIPSPAN);
+          const unsigned int imax = (is == (istrips - 1) ? IMAX-1 : (is + 1) * ISTRIPSPAN);
           for (int k = kmin; k < kmax; ++k) {
             for (int j = jmin; j < jmax; ++j) {
               for (int i = imin; i < imax; ++i) {

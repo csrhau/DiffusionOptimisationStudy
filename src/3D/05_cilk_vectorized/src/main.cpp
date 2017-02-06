@@ -57,14 +57,16 @@ int main() {
     double (&tnext_arr)[KMAX][JMAX][IMAX] = *reinterpret_cast<double (*) [KMAX][JMAX][IMAX]>(tnext.data());
     // Diffusion
     tnext_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] = tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2]
-                                            + (nu * dt / (dx * dx)) * (tnow_arr[1:KMAX-2][1:JMAX-2][0:IMAX-2] + 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[1:KMAX-2][1:JMAX-2][2:IMAX-2])
-                                            + (nu * dt / (dy * dy)) * (tnow_arr[1:KMAX-2][0:JMAX-2][1:IMAX-2] + 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[1:KMAX-2][2:JMAX-2][1:IMAX-2])
-                                            + (nu * dt / (dz * dz)) * (tnow_arr[0:KMAX-2][1:JMAX-2][1:IMAX-2] + 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[2:KMAX-2][1:JMAX-2][1:IMAX-2]);
+                                            + (nu * dt / (dx * dx)) * (tnow_arr[1:KMAX-2][1:JMAX-2][0:IMAX-2] - 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[1:KMAX-2][1:JMAX-2][2:IMAX-2])
+                                            + (nu * dt / (dy * dy)) * (tnow_arr[1:KMAX-2][0:JMAX-2][1:IMAX-2] - 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[1:KMAX-2][2:JMAX-2][1:IMAX-2])
+                                            + (nu * dt / (dz * dz)) * (tnow_arr[0:KMAX-2][1:JMAX-2][1:IMAX-2] - 2.0*tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2] + tnow_arr[2:KMAX-2][1:JMAX-2][1:IMAX-2]);
     // Reflective Boundary Condition
     tnext_arr[1:KMAX-2][1:JMAX-2][0] = tnext_arr[1:KMAX-2][1:JMAX-2][1];
     tnext_arr[1:KMAX-2][1:JMAX-2][IMAX-1] = tnext_arr[1:KMAX-2][1:JMAX-2][IMAX-2];
+
     tnext_arr[1:KMAX-2][0][1:IMAX-2] = tnext_arr[1:KMAX-2][1][1:IMAX-2];
     tnext_arr[1:KMAX-2][JMAX-1][1:IMAX-2] = tnext_arr[1:KMAX-2][JMAX-2][1:IMAX-2];
+
     tnext_arr[0][1:JMAX-2][1:IMAX-2] = tnext_arr[1][1:JMAX-2][1:IMAX-2];
     tnext_arr[KMAX-1][1:JMAX-2][1:IMAX-2] = tnext_arr[KMAX-2][1:JMAX-2][1:IMAX-2];
     std::swap(tnow, tnext); 

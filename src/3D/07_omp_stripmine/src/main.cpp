@@ -4,11 +4,11 @@
 #include <numeric>
 #include <omp.h>
 
-#define TIMESTEPS 36
+#define TIMESTEPS 360
 
-#define IMAX 80
-#define JMAX 80
-#define KMAX 80 
+#define IMAX 800
+#define JMAX 800
+#define KMAX 800
 
 #define ISTRIPSPAN 64
 #define JSTRIPSPAN 64

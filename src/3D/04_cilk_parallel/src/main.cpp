@@ -44,15 +44,17 @@ int main() {
   const unsigned long all_cells = (IMAX-2) * (JMAX-2) * (KMAX-2);
   const unsigned long hot_cells = (HOTCORNER_IMAX-1) * (HOTCORNER_JMAX-1) * (HOTCORNER_KMAX-1);
   double expected = hot_cells * 2.0 + (all_cells-hot_cells) * 1.0;
-  double temperature = 0.0;
   cilk::reducer< cilk::op_add<double> > temperature_initial(0.0);
   // Cilk reducer
   cilk_for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
-      *temperature_initial += std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);
+      const unsigned int start = INDEX3D(1, j, k);
+      const unsigned int length = IMAX-1; 
+      double *tnow_arr = tnow.data();
+      *temperature_initial += __sec_reduce_add(tnow_arr[start:length]);
     }
   }
-  temperature = temperature_initial.get_value();
+  double temperature = temperature_initial.get_value();
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
@@ -88,7 +90,10 @@ int main() {
   cilk::reducer< cilk::op_add<double> > temperature_final(0.0);
   cilk_for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
-      *temperature_final += std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);
+      const unsigned int start = INDEX3D(1, j, k);
+      const unsigned int length = IMAX-1; 
+      double *tnow_arr = tnow.data();
+      *temperature_final += __sec_reduce_add(tnow_arr[start:length]);
     }
   }
   temperature = temperature_final.get_value();

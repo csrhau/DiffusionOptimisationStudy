@@ -54,10 +54,10 @@ int main() {
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
-    #pragma simd
     #pragma omp parallel for 
     for (int k = 1; k < KMAX-1; ++k) {
       for (int j = 1; j < JMAX-1; ++j) {
+        #pragma simd
         for (int i = 1; i < IMAX-1; ++i) {
           tnext[INDEX3D(i, j, k)] = tnow[INDEX3D(i, j, k)] + (nu * dt / (dx * dx)) * (tnow[INDEX3D(i-1, j, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i+1, j, k)])
                                                            + (nu * dt / (dy * dy)) * (tnow[INDEX3D(i, j-1, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i, j+1, k)])

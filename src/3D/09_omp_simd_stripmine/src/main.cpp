@@ -44,9 +44,9 @@ int main() {
       for (int is = 0; is < istrips; ++is) {
         const unsigned int imin = is * ISTRIPSPAN;
         const unsigned int imax = (is == (istrips - 1) ? IMAX : (is + 1) * ISTRIPSPAN);
-        #pragma simd
         for (int k = kmin; k < kmax; ++k) {
           for (int j = jmin; j < jmax; ++j) {
+            #pragma simd
             for (int i = imin; i < imax; ++i) {
               if (i < HOTCORNER_IMAX && j < HOTCORNER_JMAX && k < HOTCORNER_KMAX) {
                 tnow[INDEX3D(i, j, k)] = 2.0;

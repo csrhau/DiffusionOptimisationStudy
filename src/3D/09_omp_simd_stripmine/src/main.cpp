@@ -46,7 +46,6 @@ int main() {
         const unsigned int imax = (is == (istrips - 1) ? IMAX : (is + 1) * ISTRIPSPAN);
         for (int k = kmin; k < kmax; ++k) {
           for (int j = jmin; j < jmax; ++j) {
-            #pragma simd
             for (int i = imin; i < imax; ++i) {
               if (i < HOTCORNER_IMAX && j < HOTCORNER_JMAX && k < HOTCORNER_KMAX) {
                 tnow[INDEX3D(i, j, k)] = 2.0;
@@ -74,18 +73,19 @@ int main() {
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
-    #pragma omp parallel for 
+    #pragma omp parallel for schedule(dynamic, 1) collapse(3)
     for (int ks = 0; ks < kstrips; ++ks) {
-      const unsigned int kmin = (ks == 0 ? 1 : ks * KSTRIPSPAN);
-      const unsigned int kmax = (ks == (kstrips - 1) ? KMAX-1 : (ks + 1) * KSTRIPSPAN);
       for (int js = 0; js < jstrips; ++js) {
-        const unsigned int jmin = (js == 0 ? 1 : js * JSTRIPSPAN);
-        const unsigned int jmax = (js == (jstrips - 1) ? JMAX-1 : (js + 1) * JSTRIPSPAN);
         for (int is = 0; is < istrips; ++is) {
+          const unsigned int kmin = (ks == 0 ? 1 : ks * KSTRIPSPAN);
+          const unsigned int kmax = (ks == (kstrips - 1) ? KMAX-1 : (ks + 1) * KSTRIPSPAN);
+          const unsigned int jmin = (js == 0 ? 1 : js * JSTRIPSPAN);
+          const unsigned int jmax = (js == (jstrips - 1) ? JMAX-1 : (js + 1) * JSTRIPSPAN);
           const unsigned int imin = (is == 0 ? 1 : is * ISTRIPSPAN);
           const unsigned int imax = (is == (istrips - 1) ? IMAX-1 : (is + 1) * ISTRIPSPAN);
           for (int k = kmin; k < kmax; ++k) {
             for (int j = jmin; j < jmax; ++j) {
+              #pragma simd
               for (int i = imin; i < imax; ++i) {
                 tnext[INDEX3D(i, j, k)] = tnow[INDEX3D(i, j, k)] + (nu * dt / (dx * dx)) * (tnow[INDEX3D(i-1, j, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i+1, j, k)])
                                                                  + (nu * dt / (dy * dy)) * (tnow[INDEX3D(i, j-1, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i, j+1, k)])

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J deqn_sweep_3D_11_ts_decomposition_cilk_parallel 
+#SBATCH -J deqn_sweep_3D_12_ts_decomposition_omp_parallel 
 #SBATCH --nodes=1
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=24
@@ -10,7 +10,7 @@
 module load scorep
 module load hdeem
 
-BENCHMARK="../../../src/3D/11_ts_decomposition_cilk_parallel/build/deqn3d.x"
+BENCHMARK="../../../src/3D/12_ts_decomposition_omp_parallel/build/deqn3d.x"
 echo "Slurm job id: ${SLURM_JOB_ID}"
 cat /proc/cpuinfo
 clearHdeem
@@ -18,5 +18,5 @@ cd $(dirname $BENCHMARK)
 startHdeem
 srun ./$(basename $BENCHMARK)
 stopHdeem
-printHdeem -o deqn_sweep_3D_11_ts_decomposition_cilk_parallel_${SLURM_JOB_ID}_hdeem.csv
+printHdeem -o deqn_sweep_3D_12_ts_decomposition_omp_parallel_${SLURM_JOB_ID}_hdeem.csv
 clearHdeem

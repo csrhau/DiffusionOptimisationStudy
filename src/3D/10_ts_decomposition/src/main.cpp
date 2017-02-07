@@ -3,7 +3,7 @@
 #include <chrono>
 #include <numeric>
 
-#define TIMESTEPS 360
+#define TIMESTEPS 600
 
 #define STENCIL_RADIUS 1
 

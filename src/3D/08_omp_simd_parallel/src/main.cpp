@@ -4,7 +4,7 @@
 #include <numeric>
 #include <omp.h>
 
-#define TIMESTEPS 360
+#define TIMESTEPS 600
 
 #define IMAX 800
 #define JMAX 800

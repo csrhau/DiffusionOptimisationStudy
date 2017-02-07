@@ -5,7 +5,7 @@
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
-#define TIMESTEPS 360
+#define TIMESTEPS 600
 
 #define STENCIL_RADIUS 1
 

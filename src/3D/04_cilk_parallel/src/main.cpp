@@ -5,7 +5,7 @@
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
-#define TIMESTEPS 360
+#define TIMESTEPS 600
 
 #define IMAX 800
 #define JMAX 800

@@ -52,6 +52,7 @@ int main() {
     temperature = __sec_reduce_add(tnow_arr[1:KMAX-2][1:JMAX-2][1:IMAX-2]);
   }
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
+  std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     double (&tnow_arr)[KMAX][JMAX][IMAX] = *reinterpret_cast<double (*) [KMAX][JMAX][IMAX]>(tnow.data());
     double (&tnext_arr)[KMAX][JMAX][IMAX] = *reinterpret_cast<double (*) [KMAX][JMAX][IMAX]>(tnext.data());
@@ -74,11 +75,11 @@ int main() {
       tnext_arr[1:KMAX-2][JMAX-1][1:IMAX-2] = tnext_arr[1:KMAX-2][JMAX-2][1:IMAX-2];
     };
     cilk_spawn jboundary();
-
     tnext_arr[0][1:JMAX-2][1:IMAX-2] = tnext_arr[1][1:JMAX-2][1:IMAX-2];
     tnext_arr[KMAX-1][1:JMAX-2][1:IMAX-2] = tnext_arr[KMAX-2][1:JMAX-2][1:IMAX-2];
     std::swap(tnow, tnext); 
   }
+  std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
   temperature = 0.0;
   {
     double (&tnow_arr)[KMAX][JMAX][IMAX] = *reinterpret_cast<double (*) [KMAX][JMAX][IMAX]>(tnow.data());
@@ -86,7 +87,9 @@ int main() {
   }
   std::chrono::steady_clock::time_point t_end = std::chrono::steady_clock::now();
   std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_end-t_start);
+  std::chrono::duration<double> sim_runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_sim_end-t_sim_start);
   std::cout << "Final Temperature: " << temperature << " Expected: " << expected << std::endl;
-  std::cout << "Time Elapsed: " << runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (simulation): " << sim_runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (total): " << runtime.count() << "s" << std::endl;
   return EXIT_SUCCESS;
 }

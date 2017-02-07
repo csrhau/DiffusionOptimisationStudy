@@ -52,6 +52,7 @@ int main() {
     }
   }
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
+  std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
     #pragma omp parallel for 
@@ -82,6 +83,7 @@ int main() {
     }
     std::swap(tnow, tnext); 
   }
+  std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
   temperature = 0.0;
   #pragma omp parallel for reduction(+:temperature)
   for (int k = 1; k < KMAX-1; ++k) {
@@ -91,7 +93,9 @@ int main() {
   }
   std::chrono::steady_clock::time_point t_end = std::chrono::steady_clock::now();
   std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_end-t_start);
+  std::chrono::duration<double> sim_runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_sim_end-t_sim_start);
   std::cout << "Final Temperature: " << temperature << " Expected: " << expected << std::endl;
-  std::cout << "Time Elapsed: " << runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (simulation): " << sim_runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (total): " << runtime.count() << "s" << std::endl;
   return EXIT_SUCCESS;
 }

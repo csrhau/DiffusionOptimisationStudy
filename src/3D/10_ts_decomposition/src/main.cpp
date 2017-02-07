@@ -229,7 +229,9 @@ int main() {
     }
   }
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
+  std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   RecursiveTrapezoid(0, TIMESTEPS, 1, 0, IMAX-1, 0, 1, 0, JMAX-1, 0, 1, 0, KMAX-1, 0);
+  std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
   temperature = 0.0;
   for (int k = 1; k < KMAX-1; ++k) {
     for (int j = 1; j < JMAX-1; ++j) {
@@ -238,7 +240,9 @@ int main() {
   }
   std::chrono::steady_clock::time_point t_end = std::chrono::steady_clock::now();
   std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_end - t_start);
+  std::chrono::duration<double> sim_runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_sim_end-t_sim_start);
   std::cout << "Final Temperature: " << temperature << " Expected: " << expected << std::endl;
-  std::cout << "Time Elapsed: " << runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (simulation): " << sim_runtime.count() << "s" << std::endl;
+  std::cout << "Time Elapsed (total): " << runtime.count() << "s" << std::endl;
   return EXIT_SUCCESS;
 }

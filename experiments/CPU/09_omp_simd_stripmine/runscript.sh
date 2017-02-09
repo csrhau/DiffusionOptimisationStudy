@@ -10,7 +10,7 @@
 module load scorep
 module load hdeem
 
-BENCHMARK="../../../src/3D/09_omp_simd_stripmine/build/deqn3d.x"
+BENCHMARK="../../../src/CPU/09_omp_simd_stripmine/build/deqn3d.x"
 echo "Slurm job id: ${SLURM_JOB_ID}"
 cat /proc/cpuinfo
 clearHdeem

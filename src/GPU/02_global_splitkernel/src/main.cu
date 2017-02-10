@@ -54,10 +54,39 @@ int main() {
   const dim3 dim_grid((IMAX + dim_block.x - 1) / dim_block.x,
                       (JMAX + dim_block.y - 1) / dim_block.y,
                       (KMAX + dim_block.z - 1) / dim_block.z);
+
+  const dim3 dim_block_reflect(128);
+  const dim3 dim_grid_ijreflect((IMAX-2) * (JMAX-2) + dim_block_reflect.x - 1/dim_block_reflect.x);
+  const dim3 dim_grid_jkreflect((KMAX-2) * (JMAX-2) + dim_block_reflect.x - 1/dim_block_reflect.x);
+  const dim3 dim_grid_kireflect((KMAX-2) * (IMAX-2) + dim_block_reflect.x - 1/dim_block_reflect.x);
+  // warmup 
   std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
-    DiffuseReflectKnl<<<dim_grid, dim_block>>>(tnow, tnext, cx, cy, cz);
-    std::swap(tnow, tnext); 
+    DiffuseKnl<<<dim_grid, dim_block>>>(tnow, tnext, cx, cy, cz);
+    // I/J normal (i->i, j->j, span k)
+    ReflectKnl<<<dim_grid_ijreflect, dim_block_reflect>>>(tnext,
+        INDEX3D(1, 1, 1), 
+        1,  // how many between successive i's
+        IMAX-2, // number of consecutive i's
+        IMAX, // how many between successive j's
+        JMAX-2, // number of consecutive j's
+        -IMAX * JMAX); // distance to next plane in k dimension (-ve)
+    ReflectKnl<<<dim_grid_ijreflect, dim_block_reflect>>>(tnext,
+        INDEX3D(1, 1, KMAX-2),  
+        1,  // how many between successive i's
+        IMAX-2, // number of consecutive i's
+        IMAX, // how many between successive j's
+        JMAX-2, // number of consecutive j's
+        IMAX * JMAX); // distance to next plane in k dimension (+ve)
+    // J/K normal (i-> j, j->k, span i)
+     ReflectKnl<<<dim_grid_jkreflect, dim_block_reflect>>>(tnext, INDEX3D(1, 1, 1), IMAX, JMAX-2, IMAX*JMAX, KMAX-2, -1); 
+     ReflectKnl<<<dim_grid_jkreflect, dim_block_reflect>>>(tnext, INDEX3D(IMAX-2, 1, 1), IMAX, JMAX-2, IMAX*JMAX, KMAX-2, 1); 
+     // K/I normal (i->k, j->i, span j)
+     ReflectKnl<<<dim_grid_kireflect, dim_block_reflect>>>(tnext, INDEX3D(1, 1, 1), IMAX*JMAX, KMAX-2, 1, IMAX-2, -IMAX);
+     ReflectKnl<<<dim_grid_kireflect, dim_block_reflect>>>(tnext, INDEX3D(1, JMAX-2, 1), IMAX*JMAX, KMAX-2, 1, IMAX-2, IMAX);
+
+    std::swap(tnow, tnext);
+
   }
   cudaDeviceSynchronize();
   std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
@@ -68,6 +97,7 @@ int main() {
       temperature = std::accumulate(&thost[INDEX3D(1, j, k)], &thost[INDEX3D(IMAX-1, j, k)], temperature);
     }
   }
+
   cudaFree(tnow);
   cudaFree(tnext);
   cudaDeviceReset();

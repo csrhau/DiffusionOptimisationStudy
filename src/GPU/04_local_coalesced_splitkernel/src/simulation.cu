@@ -1,5 +1,6 @@
 #include "simulation.cuh"
 
+#include <stdio.h>
 #include <cuda_runtime_api.h>
 #include <cuda.h>
 

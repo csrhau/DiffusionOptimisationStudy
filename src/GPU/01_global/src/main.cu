@@ -51,9 +51,9 @@ int main() {
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   
   const dim3 dim_block(8, 8, 8);
-  const dim3 dim_grid((IMAX + dim_block.x - 1) / dim_block.x,
-                      (JMAX + dim_block.y - 1) / dim_block.y,
-                      (KMAX + dim_block.z - 1) / dim_block.z);
+  const dim3 dim_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
+                      (JMAX - 2 + dim_block.y - 1) / dim_block.y,
+                      (KMAX - 2 + dim_block.z - 1) / dim_block.z);
   std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     DiffuseReflectKnl<<<dim_grid, dim_block>>>(tnow, tnext, cx, cy, cz);

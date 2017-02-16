@@ -51,24 +51,23 @@ int main() {
   std::cout << "Initial Temperature: " << temperature << " Expected: " << expected << std::endl;
   
   const dim3 dim_block(8, 8, 8);
-  const dim3 dim_grid((IMAX + dim_block.x - 1) / dim_block.x,
-                      (JMAX + dim_block.y - 1) / dim_block.y,
-                      (KMAX + dim_block.z - 1) / dim_block.z);
-
+  const dim3 dim_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
+                      (JMAX - 2 + dim_block.y - 1) / dim_block.y,
+                      (KMAX - 2 + dim_block.z - 1) / dim_block.z);
   const dim3 dim_ireflect_block(1, 16, 16);
   const dim3 dim_ireflect_grid(1,
-                               (JMAX + dim_block.y - 1) / dim_block.y,
-                               (KMAX + dim_block.z - 1) / dim_block.z);
+                               (JMAX-2 + dim_block.y - 1) / dim_block.y,
+                               (KMAX-2+ dim_block.z - 1) / dim_block.z);
 
   const dim3 dim_jreflect_block(16, 1, 16);
-  const dim3 dim_jreflect_grid((IMAX + dim_block.x - 1) / dim_block.x,
+  const dim3 dim_jreflect_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
                                1,
-                               (KMAX + dim_block.z - 1) / dim_block.z);
+                               (KMAX - 2 + dim_block.z - 1) / dim_block.z);
 
 
   const dim3 dim_kreflect_block(16, 16, 1);
-  const dim3 dim_kreflect_grid((IMAX + dim_block.x - 1) / dim_block.x,
-                               (JMAX + dim_block.y - 1) / dim_block.y,
+  const dim3 dim_kreflect_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
+                               (JMAX - 2 + dim_block.y - 1) / dim_block.y,
                                1);
 
 

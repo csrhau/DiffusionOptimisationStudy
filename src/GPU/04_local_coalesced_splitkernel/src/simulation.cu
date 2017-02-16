@@ -25,14 +25,11 @@ __global__ void DiffuseKnl(
   for (int offset = threadIdx.z * blockDim.y * blockDim.x + threadIdx.y * blockDim.x + threadIdx.x;
        offset < i_span * j_span * k_span;
        offset += blockDim.x * blockDim.y * blockDim.z) {
-    const int local_i = offset  % i_span;
-    const int local_j = (offset % (i_span * j_span)) / i_span;
     const int local_k = offset / (i_span * j_span);
-    const int input_i = block_i + local_i;
-    const int input_j = block_j + local_j;
-    const int input_k = block_k + local_k;
+    const int local_j = (offset - local_k * (i_span * j_span)) / i_span;
+    const int local_i = offset - local_j * i_span - local_k * (i_span * j_span);
     const int sid = local_k * k_stride + local_j * j_stride + local_i;
-    sdata[sid] = tnow[INDEX3D(input_i, input_j, input_k)];
+    sdata[sid] = tnow[INDEX3D(block_i + local_i, block_j + local_j, block_k + local_k)];
   }
   __syncthreads();
   // Do compute (using 3-D indexing)

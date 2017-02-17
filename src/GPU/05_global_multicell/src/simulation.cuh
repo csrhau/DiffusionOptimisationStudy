@@ -14,14 +14,17 @@ __global__ void DiffuseKnl(
     double cx,
     double cy,
     double cz) {
+  const int i_base = blockIdx.x * blockDim.x * ir;
+  const int j_base = blockIdx.y * blockDim.x * jr;
+  const int k_base = blockIdx.z * blockDim.x * kr;
   for (int is = 0; is < ir; ++is) {
-    const int i = gridDim.x * blockDim.x * is + blockIdx.x * blockDim.x + threadIdx.x + 1;
+    const int i = i_base + blockDim.x * is + threadIdx.x + 1;
     if (i - 1 < IMAX - 2) {
       for (int js = 0; js < jr; ++js) {
-        const int j = gridDim.y * blockDim.y * js + blockIdx.y * blockDim.y + threadIdx.y + 1;
+        const int j = j_base + blockDim.y * js + threadIdx.y + 1;
         if (j - 1 < JMAX - 2) {
           for (int ks = 0; ks < kr; ++ks) {
-            const int k = gridDim.z * blockDim.z * ks + blockIdx.z * blockDim.z + threadIdx.z + 1;
+            const int k = k_base + blockDim.z * ks + threadIdx.z + 1;
             if (k - 1 < KMAX - 2) {
               // Diffuse
               tnext[INDEX3D(i, j, k)] = tnow[INDEX3D(i, j, k)] + cx * (tnow[INDEX3D(i-1, j, k)] - 2.0*tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i+1, j, k)])

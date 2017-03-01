@@ -11,8 +11,3 @@ __global__ void DiffuseKnl(double *__restrict__ tnow,
                            double cx,
                            double cy,
                            double cz);
-
-__global__ void ReflectIKnl(double *tnext);
-__global__ void ReflectJKnl(double *tnext);
-__global__ void ReflectKKnl(double *tnext);
-

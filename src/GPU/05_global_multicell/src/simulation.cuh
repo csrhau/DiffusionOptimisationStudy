@@ -6,7 +6,6 @@
 
 #include "common.cuh"
 
-
 template <int ir, int jr, int kr>
 __global__ void DiffuseKnl(
     double *__restrict__ tnow,
@@ -39,8 +38,6 @@ __global__ void DiffuseKnl(
   }
 }
 
-
 __global__ void ReflectIKnl(double *tnext);
 __global__ void ReflectJKnl(double *tnext);
 __global__ void ReflectKKnl(double *tnext);
-

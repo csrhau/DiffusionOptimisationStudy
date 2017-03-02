@@ -178,8 +178,6 @@ void BaseTrapezoid(double *state[2],
                    int i0, int del_i0, int i1, int del_i1,
                    int j0, int del_j0, int j1, int del_j1,
                    int k0, int del_k0, int k1, int del_k1) {
-  //printf("Base trapezoid t0: %d, t1: %d, i0: %d, del_i0: %d, i1: %d, del_i1: %d,"
-   //      "j0: %d, del_j0: %d, j1: %d, del_j1: %d, k0: %d, del_k0: %d, k1: %d, del_k1: %d\n", t0, t1, i0, del_i0, i1, del_i1, j0, del_j0, j1, del_j1, k0, del_k0, k1, del_k1);
   for (int ts = t0; ts < t1; ++ts) {
     double *__restrict__ state_now = state[ts & 1];
     double *__restrict__ state_next = state[(ts + 1) & 1];

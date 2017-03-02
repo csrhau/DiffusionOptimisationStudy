@@ -2,7 +2,6 @@
 
 #include "common.h"
 
-
 void BaseTrapezoid(double *state[2],
                    double cx, double cy, double cz,
                    int t0, int t1,
@@ -21,7 +20,7 @@ void BaseTrapezoid(double *state[2],
                                                  + cy * (state_now[center-imax]-2.0* state_now[center] + state_now[center+imax])
                                                  + cz * (state_now[center-imax*jmax]-2.0* state_now[center] + state_now[center+imax*jmax]);
           // Reflective Boundary Conditions
-          if (i==1) {
+          if (i == 1) {
             state_next[INDEX3D(i-1, j, k)] = state_next[INDEX3D(i, j, k)];
           } else if (i == imax - 2) {
             state_next[INDEX3D(i+1, j, k)] = state_next[INDEX3D(i, j, k)];

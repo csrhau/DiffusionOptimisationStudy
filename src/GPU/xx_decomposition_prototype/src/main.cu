@@ -1,4 +1,4 @@
-#include "main.h"
+#include "main.cuh"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,18 +22,21 @@ int main(void) {
   const double cy = (nu * dt / (dy * dy));
   const double cz = (nu * dt / (dz * dz));
   // Initialize state
-  double *state[2];
-  state[0] = (double *) malloc(IMAX * JMAX * KMAX * sizeof(double));
-  state[1] = (double *) malloc(IMAX * JMAX * KMAX * sizeof(double));
+  double *host_state[2];
+  double *device_state[2];
+  host_state[0] = (double *) malloc(IMAX * JMAX * KMAX * sizeof(double));
+  host_state[1] = (double *) malloc(IMAX * JMAX * KMAX * sizeof(double));
+  cudaMalloc((void **) &device_state[0], IMAX * JMAX * KMAX * sizeof(double));
+  cudaMalloc((void **) &device_state[1], IMAX * JMAX * KMAX * sizeof(double));
   // Host Data Initialization
   for (int k = 0; k < KMAX; ++k) {
     for (int j = 0; j < JMAX; ++j) {
       for (int i = 0; i < IMAX; ++i) {
         size_t center = k * JMAX * IMAX + j * IMAX + i;
         if (i < HOTCORNER_IMAX && j < HOTCORNER_JMAX && k < HOTCORNER_KMAX) {
-          state[0][center] = 2.0;
+          host_state[0][center] = 2.0;
         } else {
-          state[0][center] = 1.0;
+          host_state[0][center] = 1.0;
         }
       }
     }
@@ -49,13 +52,13 @@ int main(void) {
     for (int j = 1; j < JMAX-1; ++j) {
       for (int i = 1; i < IMAX-1; ++i) {
         size_t center = k * JMAX * IMAX + j * IMAX + i;
-        temperature += state[0][center];
+        temperature += host_state[0][center];
       }
     }
   }
   printf("Initial Temperature: %f Expected: %f\n", temperature, expected);
   RecordTime(&simstart);
-  RecursiveTrapezoid(state,
+  RecursiveTrapezoid(host_state,
                     cx, cy, cz,
                     0, TIMESTEPS,
                     1, 0, IMAX-1, 0, IMAX,
@@ -67,11 +70,14 @@ int main(void) {
     for (int j = 1; j < JMAX-1; ++j) {
       for (int i = 1; i < IMAX-1; ++i) {
         size_t center = k * JMAX * IMAX + j * IMAX + i;
-        temperature += state[TIMESTEPS & 1][center];
+        temperature += host_state[TIMESTEPS & 1][center];
       }
     }
   }
   printf("Final Temperature: %f Expected: %f\n", temperature, expected);
+  cudaFree(device_state[0]);
+  cudaFree(device_state[1]);
+  cudaDeviceReset();
   RecordTime(&end);
   printf("Time Elapsed (simulation): %fs\n", TimeDifference(&simstart, &simend));
   printf("Time Elapsed (total): %fs\n", TimeDifference(&start, &end));

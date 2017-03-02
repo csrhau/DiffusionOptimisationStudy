@@ -58,19 +58,14 @@ int main() {
   const dim3 dim_ireflect_grid(1,
                                (JMAX-2 + dim_block.y - 1) / dim_block.y,
                                (KMAX-2+ dim_block.z - 1) / dim_block.z);
-
   const dim3 dim_jreflect_block(16, 1, 16);
   const dim3 dim_jreflect_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
                                1,
                                (KMAX - 2 + dim_block.z - 1) / dim_block.z);
-
-
   const dim3 dim_kreflect_block(16, 16, 1);
   const dim3 dim_kreflect_grid((IMAX - 2 + dim_block.x - 1) / dim_block.x,
                                (JMAX - 2 + dim_block.y - 1) / dim_block.y,
                                1);
-
-
   const unsigned int smem_bytes = (dim_block.x + 2) * (dim_block.y + 2) * (dim_block.z +2) * sizeof(double);
   std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {

@@ -73,8 +73,8 @@ $(BUILD_DIR)/tests.x:
 else
 $(BUILD_DIR)/tests.x: CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include
 $(BUILD_DIR)/tests.x: LDFLAGS += -lpthread
-$(BUILD_DIR)/tests.x: $(TEST_OBJ_FILES) $(filter-out $(BUILD_DIR)/main.o, $(CXX_OBJ_FILES)) $(BUILD_DIR)/gmock_main.a | $(BUILD_DIR) 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
+$(BUILD_DIR)/tests.x: $(TEST_OBJ_FILES) $(filter-out $(BUILD_DIR)/main.o, $(CXX_OBJ_FILES)) $(CU_OBJ_FILES) $(BUILD_DIR)/gmock_main.a | $(BUILD_DIR) 
+	$(NVCC) $(NVCCFLAGS) $(LDFLAGS) $^ $(LD_LIBS) -o $@
 endif
 
 $(BUILD_DIR)/gtest-all.o: $(GTEST_DIR)/src/gtest-all.cc $(GTEST_SRCS) | $(BUILD_DIR)

@@ -7,6 +7,8 @@ GTEST_BASE_DIR ?= googletest
 NVCCFLAGS=-lineinfo -std=c++11 -O3
 CXXFLAGS=-g -Wall -Wextra -pedantic -std=c++11
 
+LDLIBS = -lcuda -lcudart
+LDFLAGS = # paths to libraries; -L/path/to/library
 
 CXX_HDR_FILES = $(wildcard $(SRC_DIR)/*.h)
 CXX_SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp) 
@@ -65,7 +67,7 @@ TEST_OBJ_FILES = $(TEST_SRC_FILES:$(TEST_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 TEST_DEP_FILES = $(TEST_OBJ_FILES:.o=.d)
 
 $(GTEST_BASE_DIR):
-	git clone git@github.com:google/googletest.git
+	git clone https://github.com/google/googletest.git
 
 ifeq ("$(wildcard $(GTEST_BASE_DIR))","")
 $(BUILD_DIR)/tests.x:

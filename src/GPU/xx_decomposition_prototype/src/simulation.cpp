@@ -129,8 +129,7 @@ void RecursiveTrapezoid(double *state[2],
                          t0, t1,
                          i0, del_i0, i1, del_i1, imax,
                          j0, del_j0, j1, del_j1, jmax,
-                         k1, -STENCIL_RADIUS, kmax,
-                         k1, del_k1);
+                         k1, -STENCIL_RADIUS, k1, del_k1, kmax);
       return;
     }
     if (t_span > T_THRESHOLD) {
@@ -299,8 +298,7 @@ void RecursiveTrapezoidHost(double *state[2],
                          t0, t1,
                          i0, del_i0, i1, del_i1, imax,
                          j0, del_j0, j1, del_j1, jmax,
-                         k1, -STENCIL_RADIUS, kmax,
-                         k1, del_k1);
+                         k1, -STENCIL_RADIUS, k1, del_k1, kmax);
       return;
     }
     if (t_span > T_THRESHOLD) {

@@ -4,7 +4,7 @@ TEST_DIR = test
 BUILD_DIR = build
 GTEST_BASE_DIR ?= googletest
 
-NVCCFLAGS=-lineinfo -std=c++11 -O3
+NVCCFLAGS=-lineinfo -std=c++11 -O3 -g
 CXXFLAGS=-g -Wall -Wextra -pedantic -std=c++11
 
 LDLIBS = -lcuda -lcudart

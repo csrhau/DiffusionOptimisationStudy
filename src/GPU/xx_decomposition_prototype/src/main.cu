@@ -60,12 +60,12 @@ int main(void) {
   }
   printf("Initial Temperature: %f Expected: %f\n", temperature, expected);
   RecordTime(&simstart);
-  RecursiveTrapezoid(host_state,
-                     cx, cy, cz,
-                     0, TIMESTEPS,
-                     1, 0, IMAX-1, 0, IMAX,
-                     1, 0, JMAX-1, 0, JMAX,
-                     1, 0, KMAX-1, 0, KMAX);
+  RecursiveTrapezoidHost(host_state,
+                         cx, cy, cz,
+                         0, TIMESTEPS,
+                         1, 0, IMAX-1, 0, IMAX,
+                         1, 0, JMAX-1, 0, JMAX,
+                         1, 0, KMAX-1, 0, KMAX);
   RecordTime(&simend);
   temperature = 0.0;
   for (int k = 1; k < KMAX-1; ++k) {
@@ -76,17 +76,6 @@ int main(void) {
       }
     }
   }
-  for (int k = 0; k < KMAX-0; ++k) {
-    for (int j = 0; j < JMAX-0; ++j) {
-      for (int i = 0; i < IMAX-0; ++i) {
-        size_t center = k * JMAX * IMAX + j * IMAX + i;
-        printf("%.5f ", host_state[0][center]);
-      }
-      printf("\n");
-    }
-      printf("\n");
-  }
-
   printf("Final Temperature: %f Expected: %f\n", temperature, expected);
   RecordTime(&end);
   printf("Time Elapsed (simulation): %fs\n", TimeDifference(&simstart, &simend));

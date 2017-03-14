@@ -34,14 +34,17 @@ void XCLSetup(char *vendor, char *device, char *binary, struct XCLWorld* world) 
 }
 
 void XCLTeardown(struct XCLWorld* world) {
-  if (world->vendor_name != NULL) {
+  if (world->vendor_name) {
     free(world->vendor_name);
   }
-  if (world->device_name != NULL) {
+  if (world->device_name) {
     free(world->device_name);
   }
-  if (world->binary_name != NULL) {
+  if (world->binary_name) {
     free(world->binary_name);
+  }
+  if (world->binary_data) {
+    free(world->binary_data);
   }
   if (world->program) {
     clReleaseProgram(world->program);
@@ -119,5 +122,34 @@ void PopulateQueue(struct XCLWorld* world) {
 
 void PopulateProgram(char *binary, struct XCLWorld* world) {
   world->binary_name = strdup(binary);
-  printf("Trying to open binary %s\n", binary);
+  size_t fsize = LoadFile(binary, NULL);
+  if (fsize == 0) {
+    fprintf(stderr, "Failed to open file %s\n", binary);
+    exit(EXIT_FAILURE);
+  }
+  world->binary_data = (char *) malloc(fsize);
+  if (LoadFile(binary, world->binary_data) != fsize) {
+    fprintf(stderr, "Failed to read file %s\n", binary);
+    free(world->binary_data);
+    exit(EXIT_FAILURE);
+  }
+
+
+}
+
+size_t LoadFile(char *binary, char *dest) {
+  FILE *f = fopen(binary, "rb");
+  if (!f) { return 0; }
+  fseek(f, 0, SEEK_END);
+  size_t size = ftell(f);
+  if (dest) {
+    fseek(f, 0, SEEK_SET);
+    if (size != fread(dest, sizeof(char), size, f)) {
+      fclose(f);
+      return 0;
+    }
+    fclose(f);
+    dest[size] = '\0';
+  }
+  return size+1;
 }

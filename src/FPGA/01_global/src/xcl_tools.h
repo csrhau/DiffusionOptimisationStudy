@@ -12,6 +12,7 @@ struct XCLWorld {
   char *vendor_name;
   char *device_name;
   char *binary_name;
+  char *binary_data;
   cl_platform_id platform;
   cl_device_id device;
   cl_context context;
@@ -29,3 +30,5 @@ void PopulateDevice(char *device, struct XCLWorld* world);
 void PopulateContext(struct XCLWorld* world);
 void PopulateQueue(struct XCLWorld* world);
 void PopulateProgram(char *binary, struct XCLWorld* world);
+
+size_t LoadFile(char *binary, char *dest);

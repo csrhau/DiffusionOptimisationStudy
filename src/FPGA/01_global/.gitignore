@@ -1,0 +1,3 @@
+build/
+sdaccel_profile_summary.*
+src/kernels/*.ll

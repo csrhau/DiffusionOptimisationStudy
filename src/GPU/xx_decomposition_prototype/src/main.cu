@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "common.h"
 #include "simulation.h"
@@ -76,6 +77,21 @@ int main(void) {
       }
     }
   }
+
+  for (int k = 0; k < KMAX-0; ++k) {
+    for (int j = 0; j < JMAX-0; ++j) {
+      for (int i = 0; i < IMAX-0; ++i) {
+        size_t center = k * JMAX * IMAX + j * IMAX + i;
+        std::cout << host_state[TIMESTEPS & 1][center] << " ";
+      }
+      std::cout << std::endl;
+    }
+      std::cout << std::endl;
+      std::cout << std::endl;
+  }
+
+
+
   printf("Final Temperature: %f Expected: %f\n", temperature, expected);
   RecordTime(&end);
   printf("Time Elapsed (simulation): %fs\n", TimeDifference(&simstart, &simend));

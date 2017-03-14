@@ -1,10 +1,10 @@
-#define TIMESTEPS 100
+#define TIMESTEPS 5
 
 #define STENCIL_RADIUS 1
 
-#define IMAX 50
-#define JMAX 50
-#define KMAX 50
+#define IMAX 32
+#define JMAX 32
+#define KMAX 32
 
 #define HOTCORNER_IMAX 25
 #define HOTCORNER_JMAX 25

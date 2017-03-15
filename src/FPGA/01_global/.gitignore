@@ -2,3 +2,4 @@ build/
 sdaccel_profile_summary.*
 src/kernels/*.ll
 .Xil/
+_xocc*/

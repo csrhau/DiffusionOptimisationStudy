@@ -28,7 +28,7 @@ void XCLSetup(char *vendor, char *device, char *binary, struct XCLWorld* world) 
   }
   PopulateProgram(binary, world);
   if (world->status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to populate binary %s\n", binary);
+    fprintf(stderr, "Failed to populate binary %s: %d\n", binary, world->status);
     exit(EXIT_FAILURE);
   }
 }
@@ -127,29 +127,33 @@ void PopulateProgram(char *binary, struct XCLWorld* world) {
     fprintf(stderr, "Failed to open file %s\n", binary);
     exit(EXIT_FAILURE);
   }
-  world->binary_data = (char *) malloc(fsize);
+  world->binary_data = (unsigned char *) malloc(fsize + 1);
   if (LoadFile(binary, world->binary_data) != fsize) {
     fprintf(stderr, "Failed to read file %s\n", binary);
     free(world->binary_data);
     exit(EXIT_FAILURE);
   }
-
-
+  const unsigned char *program_start = (const unsigned char *) world->binary_data;
+  world->program = clCreateProgramWithBinary(world->context, 1, &world->device, &fsize, &program_start, NULL, &world->status);
+  if (world->status != CL_SUCCESS) { return; } 
+  if (!world->program) {
+    world->status = CL_BUILD_PROGRAM_FAILURE;
+  }
 }
 
-size_t LoadFile(char *binary, char *dest) {
+size_t LoadFile(char *binary, unsigned char *data) {
   FILE *f = fopen(binary, "rb");
   if (!f) { return 0; }
   fseek(f, 0, SEEK_END);
   size_t size = ftell(f);
-  if (dest) {
+  if (data) {
     fseek(f, 0, SEEK_SET);
-    if (size != fread(dest, sizeof(char), size, f)) {
+    if (size != fread(data, sizeof(unsigned char), size, f)) {
       fclose(f);
       return 0;
     }
     fclose(f);
-    dest[size] = '\0';
+    data[size] = '\0';
   }
-  return size+1;
+  return size;
 }

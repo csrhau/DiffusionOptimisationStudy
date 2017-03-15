@@ -9,7 +9,7 @@ int main(void) {
     fprintf(stderr, "Failed to initialise OpenCL. Error Code: %d\n", xcl_world.status);
     return EXIT_FAILURE;
   } else {
-    printf("Set up OpenCL Environment.\n\tVendor: %s\n\tDevice: %s\n\tBinary: %s\n", 
+    printf("OpenCL Environment Setup Complete.\n\tVendor: %s\n\tDevice: %s\n\tBinary: %s\n", 
         xcl_world.vendor_name, xcl_world.device_name, xcl_world.binary_name);
   }
   XCLTeardown(&xcl_world);

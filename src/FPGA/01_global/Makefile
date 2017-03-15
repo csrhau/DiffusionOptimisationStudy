@@ -54,5 +54,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 	rm -f sdaccel_profile_summary.csv
 	rm -f sdaccel_profile_summary.html
+	rm -rf _xocc_*.dir
 
 -include $(DEP_FILES) # has to be below all: otherwise it subsumes the default target

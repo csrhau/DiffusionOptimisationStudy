@@ -4,23 +4,23 @@
 #include <CL/cl.h>
 
 #include "xcl_world.h"
-#include "xcl_buffers.h"
+#include "xcl_buffer.h"
 #include "simulation.h"
 
 int main(void) {
-  struct XCLWorld xcl_world;
-  XCLSetup(VENDOR_STRING, DEVICE_STRING, BINARY_STRING, &xcl_world);
-  if (xcl_world.status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to initialise OpenCL. Error Code: %d\n", xcl_world.status);
+  struct XCLWorld world;
+  XCLSetup(VENDOR_STRING, DEVICE_STRING, BINARY_STRING, &world);
+  if (world.status != CL_SUCCESS) {
+    fprintf(stderr, "Failed to initialise OpenCL. Error Code: %d\n", world.status);
     return EXIT_FAILURE;
   } else {
     printf("OpenCL Environment Setup Complete.\n\tVendor: %s\n\tDevice: %s\n\tBinary: %s\n", 
-        xcl_world.vendor_name, xcl_world.device_name, xcl_world.binary_name);
+        world.vendor_name, world.device_name, world.binary_name);
   }
   struct Simulation simulation;
-  SimulationSetup(1024, &xcl_world, &simulation);
-  if (xcl_world.status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to set up simulation: %d\n", xcl_world.status);
+  SimulationSetup(1024, &world, &simulation);
+  if (world.status != CL_SUCCESS) {
+    fprintf(stderr, "Failed to set up simulation: %d\n", world.status);
     return EXIT_FAILURE;
   }
   // Set input values
@@ -29,24 +29,21 @@ int main(void) {
     simulation.b.host_data[i] = i;
   }
   // Push input data to device
-  XCLPushDoubleBuffer(&xcl_world, &simulation.a);
-  if (xcl_world.status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to push buffer a: %d\n", xcl_world.status);
-    return EXIT_FAILURE;
-  }
-  XCLPushDoubleBuffer(&xcl_world, &simulation.b);
-  if (xcl_world.status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to push buffer b: %d\n", xcl_world.status);
-    return EXIT_FAILURE;
-  }
-  // Pull output data from device
-  XCLPullDoubleBuffer(&xcl_world, &simulation.c);
-  if (xcl_world.status != CL_SUCCESS) {
-    fprintf(stderr, "Failed to pull buffer c: %d\n", xcl_world.status);
+  SimulationPushData(&world, &simulation);
+  // Run simulation
+  SimulationStep(&world, &simulation);
+  // Pull output data back from device
+  SimulationPullData(&world, &simulation);
+  if (world.status != CL_SUCCESS) {
+    fprintf(stderr, "Failed to pull buffer c: %d\n", world.status);
     return EXIT_FAILURE;
   }
   // Validate answer
+  for (int i = 0; i < 1024; ++i) {
+    printf("%d:\t%f + %f = %f\n", i, simulation.a.host_data[i], simulation.b.host_data[i], simulation.c.host_data[i]);
+  }
+  // Cleanup
   SimulationTeardown(&simulation);
-  XCLTeardown(&xcl_world);
+  XCLTeardown(&world);
   return EXIT_SUCCESS;
 }

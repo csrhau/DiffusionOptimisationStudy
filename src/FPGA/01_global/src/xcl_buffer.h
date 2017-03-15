@@ -5,14 +5,14 @@
 struct XCLWorld;
 
 struct XCLFloatBuffer {
-  size_t elements;
+  unsigned elements;
   size_t bytes;
   float *host_data;
   cl_mem fpga_data;
   cl_mem_flags flags;
 };
 
-void XCLFloatBufferSetup(size_t elements,
+void XCLFloatBufferSetup(unsigned elements,
                           cl_mem_flags flags,
                           struct XCLWorld* world,
                           struct XCLFloatBuffer* buffer);

@@ -18,13 +18,13 @@ int main(void) {
         world.vendor_name, world.device_name, world.binary_name);
   }
   struct Simulation simulation;
-  SimulationSetup(1024, &world, &simulation);
+  SimulationSetup(32, &world, &simulation);
   if (world.status != CL_SUCCESS) {
     fprintf(stderr, "Failed to set up simulation: %d\n", world.status);
     return EXIT_FAILURE;
   }
   // Set input values
-  for (int i = 0; i < 1024; ++i) {
+  for (int i = 0; i < 32; ++i) {
     simulation.a.host_data[i] = i;
     simulation.b.host_data[i] = i;
   }
@@ -39,7 +39,7 @@ int main(void) {
     return EXIT_FAILURE;
   }
   // Validate answer
-  for (int i = 0; i < 1024; ++i) {
+  for (int i = 0; i < 32; ++i) {
     printf("%d:\t%f + %f = %f\n", i, simulation.a.host_data[i], simulation.b.host_data[i], simulation.c.host_data[i]);
   }
   // Cleanup

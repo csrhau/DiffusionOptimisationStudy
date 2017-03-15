@@ -4,10 +4,10 @@
 
 #include "xcl_world.h"
 
-void XCLFloatBufferSetup(size_t elements,
-                          cl_mem_flags flags,
-                          struct XCLWorld* world,
-                          struct XCLFloatBuffer* buffer) {
+void XCLFloatBufferSetup(unsigned elements,
+                         cl_mem_flags flags,
+                         struct XCLWorld* world,
+                         struct XCLFloatBuffer* buffer) {
   buffer->elements = elements;
   buffer->bytes = elements * sizeof(float);
   buffer->flags = flags;

@@ -21,6 +21,8 @@ void SimulationSetup(size_t elements,
   XCLKernelSetArg(1, sizeof(cl_mem), &simulation->b.fpga_data, world, &simulation->kernel);
   if (world->status != CL_SUCCESS) { return; }
   XCLKernelSetArg(2, sizeof(cl_mem), &simulation->c.fpga_data, world, &simulation->kernel);
+  if (world->status != CL_SUCCESS) { return; }
+  XCLKernelSetArg(3, sizeof(int), &simulation->c.elements, world, &simulation->kernel);
 }
 
 void SimulationTeardown(struct Simulation *simulation) {

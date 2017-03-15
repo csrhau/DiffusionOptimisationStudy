@@ -1,4 +1,4 @@
-#include "xcl_tools.h"
+#include "xcl_world.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,27 +36,35 @@ void XCLSetup(char *vendor, char *device, char *binary, struct XCLWorld* world) 
 void XCLTeardown(struct XCLWorld* world) {
   if (world->vendor_name) {
     free(world->vendor_name);
+    world->vendor_name = NULL;
   }
   if (world->device_name) {
     free(world->device_name);
+    world->device_name = NULL;
   }
   if (world->binary_name) {
     free(world->binary_name);
+    world->binary_name = NULL;
   }
   if (world->binary_data) {
     free(world->binary_data);
+    world->binary_data = NULL;
   }
   if (world->program) {
     clReleaseProgram(world->program);
+    world->program = 0;
   }
   if (world->queue) {
     clReleaseCommandQueue(world->queue);
+    world->queue = 0;
   }
   if (world->context) {
     clReleaseContext(world->context);
+    world->context = 0;
   }
   if (world->device) {
     clReleaseDevice(world->device);
+    world->device = 0;
   }
 }
 

@@ -30,5 +30,4 @@ void PopulateDevice(char *device, struct XCLWorld* world);
 void PopulateContext(struct XCLWorld* world);
 void PopulateQueue(struct XCLWorld* world);
 void PopulateProgram(char *binary, struct XCLWorld* world);
-
 size_t LoadFile(char *binary, unsigned char *data);

@@ -9,7 +9,7 @@ XDEVICE  = xilinx:adm-pcie-ku3:1ddr:3.0
 EMULATOR = xilinx:pcie-hw-em:7v3:1.0
 
 CC = $(XILINX_SDACCEL)/lnx64/tools/gcc/bin/gcc
-CCFLAGS = -g -Wall -Wextra -pedantic -O0 -std=gnu99
+CCFLAGS = -g -Wall -Wextra -pedantic -O0 -std=gnu99 
 CPPFLAGS += -DKXVER=3 -DFPGA_DEVICE -I$(XILINX_SDACCEL)/runtime/include/1_2
 CPPFLAGS += -DTARGET_DEVICE=$(TARGET_DEVICE) -DTARGET_VENDOR=Xilinx
 CPPFLAGS += -DTARGET_BINARY=$(FPGA_BINARY)

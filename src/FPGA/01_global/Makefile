@@ -17,7 +17,7 @@ LDFLAGS = -L$(XILINX_SDACCEL)/runtime/lib/x86_64
 LDLIBS = -lxilinxopencl
 
 XCLCC = xocc
-XCLFLAGS = --xdevice ${XDEVICE} $(KERNEL_DEFS) $(KERNEL_INCS) -t $(XCLTARGET)
+XCLFLAGS = --xdevice ${XDEVICE} $(KERNEL_DEFS) $(KERNEL_INCS) -t $(XCLTARGET) -I ./src
 
 C_SRC_FILES = $(wildcard $(SRC_DIR)/*.c) 
 KERNEL_SRC_FILES = $(wildcard $(KERNEL_DIR)/*.cl)
@@ -43,7 +43,7 @@ $(BUILD_DIR)/$(HOST_BINARY): $(OBJ_FILES) | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CCFLAGS) $(INCLUDES) -MMD -c $< -o $@
 
-$(BUILD_DIR)/$(FPGA_BINARY): $(KERNEL_SRC_FILES) | $(BUILD_DIR)
+$(BUILD_DIR)/$(FPGA_BINARY): $(KERNEL_SRC_FILES) src/common.h | $(BUILD_DIR)
 	$(XCLCC) $(XCLFLAGS) -o $@ $(KERNEL_SRC_FILES) 
 
 $(BUILD_DIR):

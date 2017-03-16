@@ -8,13 +8,18 @@
 struct XCLWorld; 
 
 struct Simulation {
-  struct XCLKernel kernel;
-  struct XCLFloatBuffer a;
-  struct XCLFloatBuffer b;
-  struct XCLFloatBuffer c;
+  size_t imax; 
+  size_t jmax; 
+  size_t kmax; 
+  struct XCLKernel temperature_kernel;
+  struct XCLFloatBuffer field_a;
+  struct XCLFloatBuffer field_b;
+  struct XCLFloatBuffer registers;
 };
 
-void SimulationSetup(size_t elements,
+void SimulationSetup(size_t imax,
+                     size_t jmax,
+                     size_t kmax,
                      struct XCLWorld* world,
                      struct Simulation* simulation);
 void SimulationTeardown(struct Simulation *simulation);
@@ -22,4 +27,5 @@ void SimulationTeardown(struct Simulation *simulation);
 void SimulationPushData(struct XCLWorld* world, struct Simulation *simulation);
 void SimulationPullData(struct XCLWorld* world, struct Simulation *simulation);
 
-void SimulationStep(struct XCLWorld* world, struct Simulation* simulation);
+void SimulationDiffuse(struct XCLWorld* world, struct Simulation* simulation);
+void SimulationComputeTemperature(struct XCLWorld* world, struct Simulation* simulation);

@@ -1,10 +1,11 @@
 #pragma once
 
-#define TIMESTEPS 5
+#define TIMESTEPS 100
 
-#define IMAX 32
-#define JMAX 32
-#define KMAX 32
+// 250^3 is the absolute limit of correctness
+#define IMAX 250
+#define JMAX 250
+#define KMAX 250
 
 #define HOTCORNER_IMAX 25
 #define HOTCORNER_JMAX 25

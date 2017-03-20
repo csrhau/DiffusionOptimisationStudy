@@ -35,5 +35,11 @@ void SimulationTeardown(struct Simulation *simulation);
 void SimulationPushData(struct XCLWorld* world, struct Simulation *simulation);
 void SimulationPullData(struct XCLWorld* world, struct Simulation *simulation);
 
+void SimulationPushRegisters(struct XCLWorld* world, struct Simulation *simulation);
+void SimulationPullRegisters(struct XCLWorld* world, struct Simulation *simulation);
+
+
+
+
 void SimulationDiffuse(struct XCLWorld* world, struct Simulation* simulation);
 void SimulationComputeTemperature(struct XCLWorld* world, struct Simulation* simulation);

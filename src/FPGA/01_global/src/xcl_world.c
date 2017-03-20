@@ -72,6 +72,7 @@ void XCLTeardown(struct XCLWorld* world) {
 
 void PopulatePlatform(char *vendor, struct XCLWorld* world) {
   cl_uint num_platforms;
+  world->platform = 0;
   world->status = clGetPlatformIDs(0, NULL, &num_platforms);
   if (world->status != CL_SUCCESS) { return; } 
   cl_platform_id* platforms = (cl_platform_id *) malloc(num_platforms * sizeof(cl_platform_id));
@@ -93,11 +94,15 @@ void PopulatePlatform(char *vendor, struct XCLWorld* world) {
       free(vendor_name);
     }
   }
+  if (!world->platform) {
+    world->status = CL_INVALID_PLATFORM;
+  }
   free(platforms);
 }
 
 void PopulateDevice(char *device, struct XCLWorld* world) {
   cl_uint num_devices;
+  world->device = 0;
   world->status = clGetDeviceIDs(world->platform, CL_DEVICE_TYPE_ACCELERATOR, 0, NULL, &num_devices);
   if (world->status != CL_SUCCESS) { return; }
   cl_device_id* devices = (cl_device_id *) malloc(num_devices * sizeof(cl_device_id));
@@ -120,6 +125,9 @@ void PopulateDevice(char *device, struct XCLWorld* world) {
     }
   }
   free(devices);
+  if (!device) {
+    world->status = CL_INVALID_DEVICE;
+  }
 }
 
 void PopulateContext(struct XCLWorld* world) {

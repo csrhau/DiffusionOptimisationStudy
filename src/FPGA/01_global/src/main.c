@@ -8,9 +8,15 @@
 #include "simulation.h"
 #include "common.h"
 
-int main(void) {
+int main(int argc, char *argv[]) {
+  if (argc != 3) {
+    fprintf(stderr, "%s: A FPGA-Based Explicit Solver for the Diffusion Equation\n"
+                    "Usage: %s fpga-device fpga-binary\n", argv[0], argv[0]); 
+    return EXIT_FAILURE;
+  }
+
   struct XCLWorld world;
-  XCLSetup(VENDOR_STRING, DEVICE_STRING, BINARY_STRING, &world);
+  XCLSetup(VENDOR_STRING, argv[1], argv[2], &world);
   if (world.status != CL_SUCCESS) {
     fprintf(stderr, "Failed to initialise OpenCL. Error Code: %d\n", world.status);
     return EXIT_FAILURE;
@@ -62,7 +68,7 @@ int main(void) {
   printf("Computing initial temperature on FPGA\n");
   SimulationComputeTemperature(&world, &simulation);
   printf("Pulling back temperature from FPGA\n");
-  SimulationPullData(&world, &simulation);
+  SimulationPullRegisters(&world, &simulation);
   float measured = simulation.registers.host_data[TEMPERATURE];
   printf("Initial Temperature: %f (expected), %f (measured), %f (error)\n",expected, measured, measured-expected);
   // Run Simulation
@@ -77,8 +83,8 @@ int main(void) {
   // Calculate Final Temperature
   printf("Computing final temperature on FPGA\n");
   SimulationComputeTemperature(&world, &simulation);
-  printf("Retrieving data from FPGA\n");
-  SimulationPullData(&world, &simulation);
+  printf("Retrieving registers from FPGA\n");
+  SimulationPullRegisters(&world, &simulation);
   measured = simulation.registers.host_data[TEMPERATURE];
   printf("Final Temperature: %f (expected), %f (measured), %f (error)\n",expected, measured, measured-expected);
   // Dump to screen

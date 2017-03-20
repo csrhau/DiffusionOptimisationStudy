@@ -56,8 +56,6 @@ void SimulationPushData(struct XCLWorld *world,
   XCLPushFloatBuffer(world, &simulation->field_a);
   if (world->status != CL_SUCCESS) { return; }
   XCLPushFloatBuffer(world, &simulation->field_b);
-  if (world->status != CL_SUCCESS) { return; }
-  XCLPushFloatBuffer(world, &simulation->registers);
 }
 
 void SimulationPullData(struct XCLWorld *world,
@@ -65,7 +63,15 @@ void SimulationPullData(struct XCLWorld *world,
   XCLPullFloatBuffer(world, &simulation->field_a);
   if (world->status != CL_SUCCESS) { return; }
   XCLPullFloatBuffer(world, &simulation->field_b);
-  if (world->status != CL_SUCCESS) { return; }
+}
+
+void SimulationPushRegisters(struct XCLWorld *world,
+                             struct Simulation *simulation) {
+  XCLPushFloatBuffer(world, &simulation->registers);
+}
+
+void SimulationPullRegisters(struct XCLWorld *world,
+                             struct Simulation *simulation) {
   XCLPullFloatBuffer(world, &simulation->registers);
 }
 

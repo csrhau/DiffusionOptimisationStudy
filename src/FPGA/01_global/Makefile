@@ -3,6 +3,7 @@ FPGA_BINARY = deqn3d.xclbin
 
 SRC_DIR = src
 KERNEL_DIR = $(SRC_DIR)/kernels
+TEMPLATE_DIR = $(SRC_DIR)/templates
 BUILD_DIR = build
 
 XDEVICE  = xilinx:adm-pcie-ku3:1ddr:3.0
@@ -25,17 +26,24 @@ KERNEL_SRC_FILES = $(wildcard $(KERNEL_DIR)/*.cl)
 OBJ_FILES = $(C_SRC_FILES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 DEP_FILES = $(OBJ_FILES:.o=.d)
 
-.DEFAULT: all
-.PHONY: all
-all: TARGET_DEVICE=$(EMULATOR)
-all: host sw_emu 
-
-.PHONY: host
-host: $(BUILD_DIR)/$(HOST_BINARY)
-
+.DEFAULT: sw_emu 
 .PHONY: sw_emu 
-sw_emu: XCLTARGET=sw_emu
-sw_emu: $(BUILD_DIR)/$(FPGA_BINARY)
+sw_emu: host_binary $(BUILD_DIR)/sw_emu_$(FPGA_BINARY) $(BUILD_DIR)/sw_emu_runscript.sh
+
+.PHONY: hw_emu 
+hw_emu: host_binary $(BUILD_DIR)/hw_emu_$(FPGA_BINARY) $(BUILD_DIR)/hw_emu_runscript.sh
+
+.PHONY: hw
+hw: host_binary $(BUILD_DIR)/hw_$(FPGA_BINARY) $(BUILD_DIR)/hw_runscript.sh
+
+.PHONY: host_binary
+host_binary: $(BUILD_DIR)/$(HOST_BINARY)
+
+.PHONY: all
+all: sw_emu hw_emu hw
+
+.PHONY: emulation
+emulation: sw_emu hw_emu
 
 $(BUILD_DIR)/$(HOST_BINARY): $(OBJ_FILES) | $(BUILD_DIR)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@ 
@@ -43,8 +51,21 @@ $(BUILD_DIR)/$(HOST_BINARY): $(OBJ_FILES) | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CCFLAGS) $(INCLUDES) -MMD -c $< -o $@
 
-$(BUILD_DIR)/$(FPGA_BINARY): $(KERNEL_SRC_FILES) src/common.h | $(BUILD_DIR)
+$(BUILD_DIR)/%_$(FPGA_BINARY): XCLTARGET=$*
+$(BUILD_DIR)/%_$(FPGA_BINARY): $(KERNEL_SRC_FILES) src/common.h | $(BUILD_DIR)
 	$(XCLCC) $(XCLFLAGS) -o $@ $(KERNEL_SRC_FILES) 
+
+$(BUILD_DIR)/sw_emu_runscript.sh: $(TEMPLATE_DIR)/runscript.m4 | $(BUILD_DIR)
+	m4 -DBINARY=$(HOST_BINARY) -DXCLBIN=sw_emu_$(FPGA_BINARY) -DDEVICE=$(EMULATOR) $< > $@
+	chmod u+x $@
+
+$(BUILD_DIR)/hw_emu_runscript.sh: $(TEMPLATE_DIR)/runscript.m4 | $(BUILD_DIR)
+	m4 -DBINARY=$(HOST_BINARY) -DXCLBIN=hw_emu_$(FPGA_BINARY) -DDEVICE=$(EMULATOR) $< > $@
+	chmod u+x $@
+
+$(BUILD_DIR)/hw_runscript.sh: $(TEMPLATE_DIR)/runscript.m4 | $(BUILD_DIR)
+	m4 -DBINARY=$(HOST_BINARY) -DXCLBIN=hw_$(FPGA_BINARY) -DDEVICE=$(XDEVICE) $< > $@
+	chmod u+x $@
 
 $(BUILD_DIR):
 	@mkdir -p $@

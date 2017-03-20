@@ -5,8 +5,6 @@
 #define QUOTE(name) #name
 #define STR(macro) QUOTE(macro)
 #define VENDOR_STRING STR(TARGET_VENDOR)
-#define DEVICE_STRING STR(TARGET_DEVICE)
-#define BINARY_STRING STR(TARGET_BINARY)
 
 struct XCLWorld {
   char *vendor_name;

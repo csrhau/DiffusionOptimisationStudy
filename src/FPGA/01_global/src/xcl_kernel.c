@@ -1,5 +1,4 @@
-#include "xcl_kernel.h"
-
+#include "xcl_kernel.h" 
 #include <string.h>
 #include <CL/cl.h>
 
@@ -25,7 +24,6 @@ void XCLKernelTeardown(struct XCLKernel* kernel) {
   }
 }
 
-
 void XCLKernelSetArg(unsigned argnum,
                      size_t size,
                      const void *value,
@@ -34,9 +32,11 @@ void XCLKernelSetArg(unsigned argnum,
   world->status = clSetKernelArg(kernel->kernel, argnum, size, value);
 }
 
-
-cl_int XCLKernelInvoke(struct XCLWorld* world, struct XCLKernel* kernel) {
+cl_event XCLKernelInvoke(struct XCLWorld* world, struct XCLKernel* kernel) {
   size_t global_work_size = 1;
   size_t local_work_size = 1;
-  return clEnqueueNDRangeKernel(world->queue, kernel->kernel, 1, NULL, &global_work_size, &local_work_size, 0, NULL, NULL);
+  cl_event event;
+  world->status = clEnqueueNDRangeKernel(world->queue, kernel->kernel, 1, NULL, &global_work_size, &local_work_size, 0, NULL, &event);
+  if (world->status != CL_SUCCESS) { return 0; }
+  return event;
 }

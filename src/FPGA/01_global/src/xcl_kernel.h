@@ -20,4 +20,4 @@ void XCLKernelSetArg(unsigned argnum,
                      const void *value,
                      struct XCLWorld* world,
                      struct XCLKernel* kernel);
-cl_int XCLKernelInvoke(struct XCLWorld* world, struct XCLKernel* kernel);
+cl_event XCLKernelInvoke(struct XCLWorld* world, struct XCLKernel* kernel);

@@ -75,8 +75,8 @@ void SimulationPullRegisters(struct XCLWorld *world,
   XCLPullFloatBuffer(world, &simulation->registers);
 }
 
-void SimulationDiffuse(struct XCLWorld *world,
-                       struct Simulation *simulation) {
+cl_event SimulationStep(struct XCLWorld *world,
+                      struct Simulation *simulation) {
   struct XCLFloatBuffer *from_field;
   struct XCLFloatBuffer *to_field;
   if (simulation->ts & 1) {
@@ -87,19 +87,30 @@ void SimulationDiffuse(struct XCLWorld *world,
     to_field = &simulation->field_b;
   }
   XCLKernelSetArg(0, sizeof(cl_mem), &from_field->fpga_data, world, &simulation->diffusion_kernel);
-  if (world->status != CL_SUCCESS) { return; }
+  if (world->status != CL_SUCCESS) { return 0; }
   XCLKernelSetArg(1, sizeof(cl_mem), &to_field->fpga_data, world, &simulation->diffusion_kernel);
-  if (world->status != CL_SUCCESS) { return; }
+  if (world->status != CL_SUCCESS) { return 0; }
   XCLKernelSetArg(2, sizeof(float), &simulation->cx, world, &simulation->diffusion_kernel);
-  if (world->status != CL_SUCCESS) { return; }
+  if (world->status != CL_SUCCESS) { return 0; }
   XCLKernelSetArg(3, sizeof(float), &simulation->cy, world, &simulation->diffusion_kernel);
-  if (world->status != CL_SUCCESS) { return; }
+  if (world->status != CL_SUCCESS) { return 0; }
   XCLKernelSetArg(4, sizeof(float), &simulation->cz, world, &simulation->diffusion_kernel);
-  if (world->status != CL_SUCCESS) { return; }
-  XCLKernelInvoke(world, &simulation->diffusion_kernel);
+  if (world->status != CL_SUCCESS) { return 0; }
+  cl_event event = XCLKernelInvoke(world, &simulation->diffusion_kernel);
   simulation->ts++;
+  return event;
 }
 
+void SimulationAdvance(struct XCLWorld *world,
+                       struct Simulation *simulation,
+                       unsigned steps) {
+  cl_event event;
+  for (unsigned sc = 0; sc < steps; ++sc) {
+    event = SimulationStep(world, simulation);
+    if (world->status != CL_SUCCESS) { return; }
+  }
+  world->status = clWaitForEvents(1, &event);
+}
 
 void SimulationComputeTemperature(struct XCLWorld *world,
                                   struct Simulation *simulation) {

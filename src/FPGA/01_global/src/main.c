@@ -73,11 +73,10 @@ int main(int argc, char *argv[]) {
   printf("Initial Temperature: %f (expected), %f (measured), %f (error)\n",expected, measured, measured-expected);
   // Run Simulation
   printf("Running simulation...\n");
-  for (unsigned ts = 1; ts <= TIMESTEPS; ++ts) {
-    SimulationDiffuse(&world, &simulation);
-    if (ts % 10 == 0) {
-      printf("Timestep %d\n", ts);
-    }
+
+  for (unsigned ts = 1; ts <= TIMESTEPS; ts += GRINDTIME) {
+    SimulationAdvance(&world, &simulation, MIN(ts-TIMESTEPS, GRINDTIME));
+    printf("Timestep %d\n", ts);
   }
   printf("Simulation complete at timestep %d\n", TIMESTEPS);
   // Calculate Final Temperature

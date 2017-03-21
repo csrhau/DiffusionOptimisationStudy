@@ -38,8 +38,7 @@ void SimulationPullData(struct XCLWorld* world, struct Simulation *simulation);
 void SimulationPushRegisters(struct XCLWorld* world, struct Simulation *simulation);
 void SimulationPullRegisters(struct XCLWorld* world, struct Simulation *simulation);
 
+cl_event SimulationStep(struct XCLWorld* world, struct Simulation* simulation);
+void SimulationAdvance(struct XCLWorld* world, struct Simulation* simulation, unsigned steps);
 
-
-
-void SimulationDiffuse(struct XCLWorld* world, struct Simulation* simulation);
 void SimulationComputeTemperature(struct XCLWorld* world, struct Simulation* simulation);

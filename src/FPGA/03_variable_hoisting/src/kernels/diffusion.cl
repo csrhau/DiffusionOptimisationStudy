@@ -27,10 +27,10 @@ krnl_diffuse(__global float *restrict field_a,
   const size_t kstride = IMAX*JMAX;
   float cumsum = 0;
   for (unsigned k = 1; k < KMAX-1; ++k) {
-    const size_t center = k * JMAX * IMAX + j * IMAX + i;
     for (unsigned j = 1; j < JMAX-1; ++j) {
       __attribute__((xcl_pipeline_loop))
       for (unsigned i = 1; i < IMAX-1; ++i) {
+        const size_t center = k * JMAX * IMAX + j * IMAX + i;
         float field_center = field_a[center];
         float result = field_center
                      + cx * (field_a[center-istride] - 2*field_center + field_a[center+istride])

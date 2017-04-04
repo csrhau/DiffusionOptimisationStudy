@@ -61,6 +61,7 @@ krnl_diffuse(__global float *restrict field_a,
       } else if (k == KMAX - 2) {
          async_work_group_copy(field_b + line_start + kstride, linebuf_out, IMAX, 0);
       } 
+      barrier(CLK_LOCAL_MEM_FENCE);
     }
   }
 }

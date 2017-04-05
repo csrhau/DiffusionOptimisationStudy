@@ -42,9 +42,7 @@ krnl_diffuse(__global float *restrict field_a,
       async_work_group_copy(linebuf_kprev, field_a + line_start - kstride, IMAX, 0);
       async_work_group_copy(linebuf_knext, field_a + line_start + kstride, IMAX, 0);
       barrier(CLK_LOCAL_MEM_FENCE);
-      __attribute__((xcl_pipeline_loop))
       for (unsigned i = 1; i < IMAX-1; ++i) {
-        const size_t center = line_start + i;
         float result = linebuf_in[i]
                      + cx * (linebuf_in[i-istride] - 2*linebuf_in[i] + linebuf_in[i+istride])
                      + cy * (linebuf_jprev[i] - 2*linebuf_in[i] + linebuf_jnext[i])

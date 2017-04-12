@@ -1,0 +1,115 @@
+Executing 07_linebuffer_inout_multi
+OpenCL Environment Setup Complete:
+	Vendor: Xilinx
+	Device: xilinx:adm-pcie-ku3:1ddr:3.0
+	Binary: hw_deqn3d.xclbin
+Simulation Setup Complete:
+	IMAX: 250	HOTCORNER_IMAX: 25
+	JMAX: 250	HOTCORNER_JMAX: 25
+	KMAX: 250	HOTCORNER_KMAX: 25
+	Expected Temperature: 15266816.000000
+Sending data to FPGA
+Computing initial temperature on FPGA
+Pulling back temperature from FPGA
+Initial Temperature: 15266816.000000 (expected), 15266816.000000 (measured), 0.000000 (error)
+Running simulation...
+Simulating Timesteps 1-11...
+Simulating Timesteps 11-21...
+Simulating Timesteps 21-31...
+Simulating Timesteps 31-41...
+Simulating Timesteps 41-51...
+Simulating Timesteps 51-61...
+Simulating Timesteps 61-71...
+Simulating Timesteps 71-81...
+Simulating Timesteps 81-91...
+Simulating Timesteps 91-101...
+Simulation complete at timestep 100
+Computing final temperature on FPGA
+Retrieving registers from FPGA
+Final Temperature: 15266816.000000 (expected), 15266815.000000 (measured), -1.000000 (error)
+Timing Report (seconds):
+	Host Setup:		7.179980
+	Data Push:		0.073184
+	Init. Temp Calc:	0.633386
+	Simulation:		88.960562
+	Final Temp Calc:	0.611878
+	Teardown:		0.001201
+	TOTAL:		97.460190
+Finished 07_linebuffer_inout_multi
+Executing 06_linebuffer_in_single_out_multi
+OpenCL Environment Setup Complete:
+	Vendor: Xilinx
+	Device: xilinx:adm-pcie-ku3:1ddr:3.0
+	Binary: hw_deqn3d.xclbin
+Simulation Setup Complete:
+	IMAX: 250	HOTCORNER_IMAX: 25
+	JMAX: 250	HOTCORNER_JMAX: 25
+	KMAX: 250	HOTCORNER_KMAX: 25
+	Expected Temperature: 15266816.000000
+Sending data to FPGA
+Computing initial temperature on FPGA
+Pulling back temperature from FPGA
+Initial Temperature: 15266816.000000 (expected), 15266816.000000 (measured), 0.000000 (error)
+Running simulation...
+Simulating Timesteps 1-11...
+Simulating Timesteps 11-21...
+Simulating Timesteps 21-31...
+Simulating Timesteps 31-41...
+Simulating Timesteps 41-51...
+Simulating Timesteps 51-61...
+Simulating Timesteps 61-71...
+Simulating Timesteps 71-81...
+Simulating Timesteps 81-91...
+Simulating Timesteps 91-101...
+Simulation complete at timestep 100
+Computing final temperature on FPGA
+Retrieving registers from FPGA
+Final Temperature: 15266816.000000 (expected), 15266815.000000 (measured), -1.000000 (error)
+Timing Report (seconds):
+	Host Setup:		7.255566
+	Data Push:		0.074013
+	Init. Temp Calc:	0.633310
+	Simulation:		187.196930
+	Final Temp Calc:	0.611893
+	Teardown:		0.001276
+	TOTAL:		195.772987
+Finished 06_linebuffer_in_single_out_multi
+Executing 05_linebuffer_inout_single
+OpenCL Environment Setup Complete:
+	Vendor: Xilinx
+	Device: xilinx:adm-pcie-ku3:1ddr:3.0
+	Binary: hw_deqn3d.xclbin
+Simulation Setup Complete:
+	IMAX: 250	HOTCORNER_IMAX: 25
+	JMAX: 250	HOTCORNER_JMAX: 25
+	KMAX: 250	HOTCORNER_KMAX: 25
+	Expected Temperature: 15266816.000000
+Sending data to FPGA
+Computing initial temperature on FPGA
+Pulling back temperature from FPGA
+Initial Temperature: 15266816.000000 (expected), 15266816.000000 (measured), 0.000000 (error)
+Running simulation...
+Simulating Timesteps 1-11...
+Simulating Timesteps 11-21...
+Simulating Timesteps 21-31...
+Simulating Timesteps 31-41...
+Simulating Timesteps 41-51...
+Simulating Timesteps 51-61...
+Simulating Timesteps 61-71...
+Simulating Timesteps 71-81...
+Simulating Timesteps 81-91...
+Simulating Timesteps 91-101...
+Simulation complete at timestep 100
+Computing final temperature on FPGA
+Retrieving registers from FPGA
+Final Temperature: 15266816.000000 (expected), 15266815.000000 (measured), -1.000000 (error)
+Timing Report (seconds):
+	Host Setup:		7.217386
+	Data Push:		0.074181
+	Init. Temp Calc:	0.633339
+	Simulation:		1054.901544
+	Final Temp Calc:	0.611918
+	Teardown:		0.001324
+	TOTAL:		1063.439692
+Finished 05_linebuffer_inout_single
+Executing 04_linebuffer_input_single

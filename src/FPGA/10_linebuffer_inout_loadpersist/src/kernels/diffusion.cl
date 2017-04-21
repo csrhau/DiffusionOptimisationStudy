@@ -10,9 +10,9 @@ __kernel void __attribute__ ((reqd_work_group_size(1, 1, 1)))
 krnl_temperature(__global float *restrict field,
                  __global float *restrict registers) {
   float cumsum = 0;
-  for (unsigned k = 1; k < KMAX-1; ++k) {
-    for (unsigned j = 1; j < JMAX-1; ++j) {
-      for (unsigned i = 1; i < IMAX-1; ++i) {
+  for (int k = 1; k < KMAX-1; ++k) {
+    for (int j = 1; j < JMAX-1; ++j) {
+      for (int i = 1; i < IMAX-1; ++i) {
         cumsum += field[k * JMAX * IMAX + j * IMAX + i];
       }
     }
@@ -32,12 +32,11 @@ krnl_diffuse(__global float *restrict field_a,
   local float linebuf_kprev[IMAX];
   local float linebuf_knext[IMAX];
   local float linebuf_out[IMAX];
-  const size_t istride = 1;
   const size_t kstride = IMAX*JMAX;
-  for (unsigned k = 1; k < KMAX-1; ++k) {
+  for (int k = 1; k < KMAX-1; ++k) {
     async_work_group_copy(tempbuf[0], field_a + k * JMAX * IMAX, IMAX, 0);
     async_work_group_copy(tempbuf[1], field_a + k * JMAX * IMAX + IMAX, IMAX, 0);
-    for (unsigned j = 1; j < JMAX-1; ++j) {
+    for (int j = 1; j < JMAX-1; ++j) {
       const size_t line_start = k * JMAX * IMAX + j * IMAX;
       async_work_group_copy(LINEBUF_JNEXT, field_a + line_start + IMAX, IMAX, 0);
       async_work_group_copy(linebuf_kprev, field_a + line_start - kstride, IMAX, 0);
@@ -46,10 +45,10 @@ krnl_diffuse(__global float *restrict field_a,
       float left;
       float center = LINEBUF_IN[0];
       float right = LINEBUF_IN[1];
-      for (unsigned i = 1; i < IMAX-1; ++i) {
+      for (int i = 1; i < IMAX-1; ++i) {
         left = center;
         center = right;
-        right = LINEBUF_IN[i+istride];
+        right = LINEBUF_IN[i+1];
         float result = center 
                      + cx * (left - 2*center + right)
                      + cy * (LINEBUF_JPREV[i] - 2*center + LINEBUF_JNEXT[i])
@@ -57,9 +56,9 @@ krnl_diffuse(__global float *restrict field_a,
         linebuf_out[i] = result;
         // Reflective Boundary Condition
         if (i==1) {
-          linebuf_out[i-istride] = result;
+          linebuf_out[i-1] = result;
         } else if (i == IMAX - 2) {
-          linebuf_out[i+istride] = result;
+          linebuf_out[i+1] = result;
         } 
       }
       async_work_group_copy(field_b + line_start, linebuf_out, IMAX, 0);

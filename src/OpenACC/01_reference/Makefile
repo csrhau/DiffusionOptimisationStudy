@@ -9,7 +9,6 @@ OBJ_FILES = $(CPP_SRC_FILES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 DEP_FILES = $(CPP_SRC_FILES:$(SRC_DIR)/%.cpp=$(DEP_DIR)/%.d)
 
 CXXFLAGS = $(COMPILER_CXXFLAGS) -std=c++11 -Werror -pedantic -O0 -g
-DEPFLAGS = -MMD $(COMPILER_DEPFLAGS)
 LDFLAGS = $(COMPILER_LDFLAGS)
 LDLIBS = $(COMPILER_LDLIBS)
 
@@ -26,16 +25,16 @@ endif
 ###########################
 
 ifeq ($(TOOLCHAIN), GNU)
-	COMPILER_CXXFLAGS = -fopenacc -Wall -Wextra -MMD
+	COMPILER_CXXFLAGS = -fopenacc -Wall -Wextra
 	COMPILER_LDFLAGS  = -fopenacc
-	COMPILER_DEPFLAGS = -MMD -MF $(BUILD_DIR)/$*.d
+	DEPFLAGS = -MMD -MF$(BUILD_DIR)/$*.d
 endif
 
 ifeq ($(TOOLCHAIN), PGI)
 	ta ?= host # Default to single-threaded host impl (works everywhere)
 	COMPILER_CXXFLAGS = -acc -Minfo=acc -Bdynamic -ta=$(ta)
 	COMPILER_LDFLAGS  = -acc -Bdynamic
-	COMPILER_DEPFLAGS = -MMD $(BUILD_DIR)/$*.d
+	DEPFLAGS = -MMD$(BUILD_DIR)/$*.d
 endif
 
 ####################################

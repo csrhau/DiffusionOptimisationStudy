@@ -1,14 +1,42 @@
 PRODUCT = deqn3d.x
 SRC_DIR = src
 BUILD_DIR = build
-
-CXXFLAGS=-std=c++11 -g -Wall -Wextra -Werror -pedantic -O3
+DEP_DIR = $(BUILD_DIR)
 
 CPP_HDR_FILES = $(wildcard $(SRC_DIR)/*.h)
 CPP_SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES = $(CPP_SRC_FILES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
-DEP_FILES = $(OBJ_FILES:.o=.d)
+DEP_FILES = $(CPP_SRC_FILES:$(SRC_DIR)/%.cpp=$(DEP_DIR)/%.d)
 
+CXXFLAGS = $(COMPILER_CXXFLAGS) -std=c++11 -Werror -pedantic -O0 -g
+DEPFLAGS = -MMD $(COMPILER_DEPFLAGS)
+LDFLAGS = $(COMPILER_LDFLAGS)
+LDLIBS = $(COMPILER_LDLIBS)
+
+ifeq ($(findstring g++, $(CXX)), g++)
+	TOOLCHAIN=GNU
+endif
+
+ifeq ($(findstring pgc++, $(CXX)), pgc++)
+	TOOLCHAIN=PGI
+endif
+
+###########################
+# Compiler Specific Flags #
+###########################
+
+ifeq ($(TOOLCHAIN), GNU)
+	COMPILER_CXXFLAGS = -fopenacc -Wall -Wextra -MMD
+	COMPILER_LDFLAGS  = -fopenacc
+	COMPILER_DEPFLAGS = -MMD -MF $(BUILD_DIR)/$*.d
+endif
+
+ifeq ($(TOOLCHAIN), PGI)
+	ta ?= host # Default to single-threaded host impl (works everywhere)
+	COMPILER_CXXFLAGS = -acc -Minfo=acc -Bdynamic -ta=$(ta)
+	COMPILER_LDFLAGS  = -acc -Bdynamic
+	COMPILER_DEPFLAGS = -MMD $(BUILD_DIR)/$*.d
+endif
 
 ####################################
 # Simulation Size Parameterization #
@@ -30,17 +58,6 @@ ifneq ($(kmax),)
 CPPFLAGS +=-DKMAX=$(kmax)
 endif
 
-
-###########################
-# Compiler Specific Flags #
-###########################
-
-ifeq ($(CXX), g++)
-$(warning WARNING: GNU compilers do not support multithreading on host CPUs)
-CXXFLAGS += -fopenacc
-LDFLAGS += -fopenacc
-endif
-
 .DEFAULT: all
 .PHONY: all
 all: $(BUILD_DIR)/$(PRODUCT)
@@ -48,11 +65,18 @@ all: $(BUILD_DIR)/$(PRODUCT)
 $(BUILD_DIR)/$(PRODUCT): $(OBJ_FILES) | $(BUILD_DIR)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) -MMD -c $< -o $@
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR) ; $(COMPILER_WARNINGS)
+	$(CXX) $(CPPFLAGS) $(DEPFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_DIR):
 	@mkdir -p $@
+
+.PHONY: usage
+usage:
+	@echo "PGI specific variables:"
+	@echo "    ta=[host,multicore,tesla]"
+	@echo ""
+	@echo "PGI Usage Example: make timesteps=20 ta=tesla"
 
 .PHONY: clean
 clean:
@@ -61,4 +85,8 @@ clean:
 	rm -rf $(DEP_FILES)
 	rm -rf $(BUILD_DIR)
 
--include $(DEP_FILES) # has to be below all: otherwise it subsumes the default target
+###################################
+# Automatic Dependency Generation #
+###################################
+
+-include $(DEP_FILES) # has to be after 'all', otherwise becomes default target

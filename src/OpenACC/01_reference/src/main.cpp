@@ -46,9 +46,11 @@ int main() {
   std::chrono::steady_clock::time_point t_sim_start = std::chrono::steady_clock::now();
   for (int ts = 0; ts < TIMESTEPS; ++ts) {
     // Diffusion
-    #pragma acc kernels
+    #pragma acc parallel loop
     for (int k = 1; k < KMAX-1; ++k) {
+      #pragma acc loop
       for (int j = 1; j < JMAX-1; ++j) {
+        #pragma acc loop
         for (int i = 1; i < IMAX-1; ++i) {
           tnext[INDEX3D(i, j, k)] = tnow[INDEX3D(i, j, k)] + (nu * dt / (dx * dx)) * (tnow[INDEX3D(i-1, j, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i+1, j, k)])
                                                            + (nu * dt / (dy * dy)) * (tnow[INDEX3D(i, j-1, k)]-2.0* tnow[INDEX3D(i, j, k)] + tnow[INDEX3D(i, j+1, k)])
@@ -57,17 +59,22 @@ int main() {
       }
     }
     // Reflective Boundary Condition
+    #pragma acc parallel loop
     for (int k = 1; k < KMAX-1; ++k) {
+      #pragma acc loop
       for (int j = 1; j < JMAX-1; ++j) {
         tnext[INDEX3D(0, j, k)] = tnext[INDEX3D(1, j, k)];
         tnext[INDEX3D(IMAX-1, j, k)] = tnext[INDEX3D(IMAX-2, j, k)];
       }
+      #pragma acc loop
       for (int i = 1; i < IMAX-1; ++i) {
         tnext[INDEX3D(i, 0, k)] = tnext[INDEX3D(i, 1, k)];
         tnext[INDEX3D(i, JMAX-1, k)] = tnext[INDEX3D(i, JMAX-2, k)];
       }
     }
+    #pragma acc parallel loop
     for (int j = 1; j < JMAX-1; ++j) {
+      #pragma acc loop
       for (int i = 1; i < IMAX-1; ++i) {
         tnext[INDEX3D(i, j, 0)] = tnext[INDEX3D(i, j, 1)];
         tnext[INDEX3D(i, j, KMAX-1)] = tnext[INDEX3D(i, j, KMAX-2)];

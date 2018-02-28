@@ -18,8 +18,9 @@ int main() {
   const double dy = height / (JMAX-1);
   const double dz = height / (KMAX-1);
   const double dt = sigma * dx * dy * dz / nu;
-  std::vector<double> tnow(IMAX * JMAX * KMAX);
-  std::vector<double> tnext(IMAX * JMAX * KMAX);
+  const double elems = IMAX * JMAX * KMAX;
+  double *restrict tnow = static_cast<double *>(malloc(elems * sizeof(double)));
+  double *restrict tnext = static_cast<double *>(malloc(elems * sizeof(double)));;
   for (int k = 0; k < KMAX; ++k) {
     for (int j = 0; j < JMAX; ++j) {
       for (int i = 0; i < IMAX; ++i) {
@@ -89,6 +90,8 @@ int main() {
       temperature = std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);
     }
   }
+  free(tnow);
+  free(tnext);
   std::chrono::steady_clock::time_point t_end = std::chrono::steady_clock::now();
   std::chrono::duration<double> runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_end-t_start);
   std::chrono::duration<double> sim_runtime = std::chrono::duration_cast<std::chrono::duration<double>>(t_sim_end-t_sim_start);

@@ -19,8 +19,8 @@ int main() {
   const double dz = height / (KMAX-1);
   const double dt = sigma * dx * dy * dz / nu;
   const int elems = IMAX * JMAX * KMAX;
-  double *restrict tnow = new double[elems];
-  double *restrict tnext = new double[elems];
+  double *u__restrict tnow = new double[elems];
+  double * __restrict tnext = new double[elems];
   for (int k = 0; k < KMAX; ++k) {
     for (int j = 0; j < JMAX; ++j) {
       for (int i = 0; i < IMAX; ++i) {

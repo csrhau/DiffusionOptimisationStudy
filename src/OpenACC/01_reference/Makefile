@@ -12,6 +12,11 @@ CXXFLAGS = $(COMPILER_CXXFLAGS) -std=c++11 -Werror -pedantic -O0 -g
 LDFLAGS = $(COMPILER_LDFLAGS)
 LDLIBS = $(COMPILER_LDLIBS)
 
+
+###########################
+# Compiler Specific Flags #
+###########################
+
 ifeq ($(findstring g++, $(CXX)), g++)
 	TOOLCHAIN=GNU
 endif
@@ -19,10 +24,6 @@ endif
 ifeq ($(findstring pgc++, $(CXX)), pgc++)
 	TOOLCHAIN=PGI
 endif
-
-###########################
-# Compiler Specific Flags #
-###########################
 
 ifeq ($(TOOLCHAIN), GNU)
 	COMPILER_CXXFLAGS = -fopenacc -Wall -Wextra
@@ -36,6 +37,7 @@ ifeq ($(TOOLCHAIN), PGI)
 	COMPILER_LDFLAGS  = -acc -Bdynamic
 	DEPFLAGS = -MMD$(BUILD_DIR)/$*.d
 endif
+
 
 ####################################
 # Simulation Size Parameterization #
@@ -56,6 +58,11 @@ endif
 ifneq ($(kmax),)
 CPPFLAGS +=-DKMAX=$(kmax)
 endif
+
+
+##############
+# Make Rules #
+##############
 
 .DEFAULT: all
 .PHONY: all
@@ -83,6 +90,7 @@ clean:
 	rm -rf $(OBJ_FILES)
 	rm -rf $(DEP_FILES)
 	rm -rf $(BUILD_DIR)
+
 
 ###################################
 # Automatic Dependency Generation #

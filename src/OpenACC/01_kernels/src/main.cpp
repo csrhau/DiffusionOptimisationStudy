@@ -80,9 +80,14 @@ int main() {
   }
   std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
   temperature = 0.0;
-  for (int k = 1; k < KMAX-1; ++k) {
-    for (int j = 1; j < JMAX-1; ++j) {
-      temperature = std::accumulate(&tnow[INDEX3D(1, j, k)], &tnow[INDEX3D(IMAX-1, j, k)], temperature);
+  #pragma acc kernels
+  {
+    for (int k = 1; k < KMAX-1; ++k) {
+      for (int j = 1; j < JMAX-1; ++j) {
+        for (int i = 1; i < IMAX-1; ++i) {
+          temperature += tnow[INDEX3D(i, j, k)];
+        }
+      }
     }
   }
   delete[] tnow;

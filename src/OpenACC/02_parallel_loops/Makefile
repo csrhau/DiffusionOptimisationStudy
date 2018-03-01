@@ -33,7 +33,7 @@ endif
 
 ifeq ($(TOOLCHAIN), PGI)
 	ta ?= host # Default to single-threaded host impl (works everywhere)
-	COMPILER_CXXFLAGS = -acc -Minfo=accel -Mbounds -Bdynamic -ta=$(ta)
+	COMPILER_CXXFLAGS = -acc -Minfo=accel -Bdynamic -ta=$(ta)
 	COMPILER_LDFLAGS  = -acc -Bdynamic
 	DEPFLAGS = -MMD$(BUILD_DIR)/$*.d
 endif

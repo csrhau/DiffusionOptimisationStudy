@@ -75,8 +75,14 @@ int main() {
           tnext[INDEX3D(i, j, KMAX-1)] = tnext[INDEX3D(i, j, KMAX-2)];
         }
       }
+      for (int k = 1; k < KMAX-1; ++k) {
+        for (int j = 1; j < JMAX-1; ++j) {
+          for (int i = 1; i < IMAX-1; ++i) {
+            tnow[INDEX3D(i, j, k)] = tnext[INDEX3D(i, j, k)];
+          }
+        }
+      }
     }
-    std::swap(tnow, tnext);
   }
   std::chrono::steady_clock::time_point t_sim_end = std::chrono::steady_clock::now();
   temperature = 0.0;

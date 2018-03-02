@@ -81,10 +81,21 @@ $(BUILD_DIR):
 
 .PHONY: usage
 usage:
-	@echo "PGI specific variables:"
-	@echo "    ta=[host,multicore,tesla]"
+	@echo "Simulation Parameters"
+	@echo "====================="
+	@echo "    imax=<int>"
+	@echo "    jmax=<int>"
+	@echo "    kmax=<int>"
+	@echo "    timesteps=<int>"
 	@echo ""
-	@echo "PGI Usage Example: make timesteps=20 ta=tesla"
+	@echo "Compiler Options"
+	@echo "================"
+	@echo "PGI:"
+	@echo "    ta=host|multicore|tesla[:tesla-options]"
+	@echo ""
+	@echo "Usage examples"
+	@echo "=============="
+	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo {imax,jmax,kmax,timesteps}=100"
 
 .PHONY: clean
 clean:

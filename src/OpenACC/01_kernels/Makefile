@@ -33,7 +33,7 @@ endif
 
 ifeq ($(TOOLCHAIN), PGI)
 	ta ?= host # Default to single-threaded host impl (works everywhere)
-	COMPILER_CXXFLAGS = -acc -Minfo=accel -Bstatic_pgi -ta=$(ta)
+	COMPILER_CXXFLAGS = -acc -Minfo=accel -ta=$(ta)
 	COMPILER_LDFLAGS  = -acc -Bstatic_pgi $(EXPLICIT_LIBRARY_PATH)
 	# PGI Doesn't by default respect LIBRARY_PATH or LD_LIBRARY_PATH
 	COMPILER_LDFLAGS += $(addprefix -L, $(subst :, , $(LIBRARY_PATH)))

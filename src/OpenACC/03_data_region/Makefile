@@ -95,7 +95,7 @@ usage:
 	@echo ""
 	@echo "Usage examples"
 	@echo "=============="
-	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo {imax,jmax,kmax,timesteps}=100"
+	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo,nordc {imax,jmax,kmax,timesteps}=100"
 
 .PHONY: clean
 clean:

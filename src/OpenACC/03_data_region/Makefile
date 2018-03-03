@@ -70,6 +70,10 @@ endif
 .PHONY: all
 all: $(BUILD_DIR)/$(PRODUCT)
 
+.PHONY: ibm-p8
+ibm-p8: ta=tesla:cc35,lineinfo,nordc,debug imax=100 jmax=100 kmax=100 timesteps=100
+ibm-p8: $(BUILD_DIR)/$(PRODUCT)
+
 $(BUILD_DIR)/$(PRODUCT): $(OBJ_FILES) | $(BUILD_DIR)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
@@ -95,7 +99,7 @@ usage:
 	@echo ""
 	@echo "Usage examples"
 	@echo "=============="
-	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo,nordc {imax,jmax,kmax,timesteps}=100"
+	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo,nordc,debug {imax,jmax,kmax,timesteps}=100"
 
 .PHONY: clean
 clean:

@@ -13,9 +13,9 @@ LDFLAGS = $(COMPILER_LDFLAGS)
 LDLIBS = $(COMPILER_LDLIBS)
 
 
-###########################
-# Compiler Specific Flags #
-###########################
+##########################
+# OpenACC Specific Flags #
+##########################
 
 ifeq ($(findstring g++, $(CXX)), g++)
 	TOOLCHAIN=GNU
@@ -33,8 +33,14 @@ endif
 
 ifeq ($(TOOLCHAIN), PGI)
 	ta ?= host # Default to single-threaded host impl (works everywhere)
-	COMPILER_CXXFLAGS = -acc -Minfo=accel -ta=$(ta)
-	COMPILER_LDFLAGS  = -acc -Bstatic_pgi $(EXPLICIT_LIBRARY_PATH)
+ifeq ($(cuda),)
+	ACC_ARCHITECTURE = -ta=$(ta)
+else
+	ACC_ARCHITECTURE = -ta=tesla:cuda$(cuda),nordc,debug
+	ACC_LINKFLAGS = -Mcuda=$(cuda)
+endif
+	COMPILER_CXXFLAGS = -acc -Minfo=accel $(ACC_ARCHITECTURE)
+	COMPILER_LDFLAGS  = -acc $(ACC_LINKFLAGS)
 	# PGI Doesn't by default respect LIBRARY_PATH or LD_LIBRARY_PATH
 	COMPILER_LDFLAGS += $(addprefix -L, $(subst :, , $(LIBRARY_PATH)))
 	DEPFLAGS = -MMD$(BUILD_DIR)/$*.d
@@ -70,10 +76,6 @@ endif
 .PHONY: all
 all: $(BUILD_DIR)/$(PRODUCT)
 
-.PHONY: ibm-p8
-ibm-p8: ta=tesla:cc35,lineinfo,nordc,debug imax=100 jmax=100 kmax=100 timesteps=100
-ibm-p8: $(BUILD_DIR)/$(PRODUCT)
-
 $(BUILD_DIR)/$(PRODUCT): $(OBJ_FILES) | $(BUILD_DIR)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
@@ -95,11 +97,14 @@ usage:
 	@echo "Compiler Options"
 	@echo "================"
 	@echo "PGI:"
-	@echo "    ta=host|multicore|tesla[:tesla-options]"
+	@echo "    cuda=7.5|8.0|9.0|9.1"
+	@echo "    ta=host|multicore"
 	@echo ""
 	@echo "Usage examples"
 	@echo "=============="
-	@echo "PGI + CUDA:    make ta=tesla:cc60,lineinfo,nordc,debug {imax,jmax,kmax,timesteps}=100"
+	@echo "GNU:               make {imax,jmax,kmax,timesteps}=100"
+	@echo "PGI + CUDA 9.0:    make cuda=9.0 {imax,jmax,kmax,timesteps}=100"
+	@echo "PGI + CUDA 9.1:    make cuda=9.1 {imax,jmax,kmax,timesteps}=100"
 
 .PHONY: clean
 clean:
